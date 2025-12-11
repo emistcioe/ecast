@@ -220,7 +220,11 @@ const JoinUs = () => {
   };
 
   // On /join-us, wait for redirect decision first
-  if (typeof window !== "undefined" && router.pathname === "/join-us" && !redirectChecked) {
+  if (
+    typeof window !== "undefined" &&
+    router.pathname === "/join-us" &&
+    !redirectChecked
+  ) {
     return (
       <>
         <NavBar />
@@ -696,14 +700,15 @@ const JoinUs = () => {
                   disabled={isSubmitting || formSubmitted}
                 >
                   <option value="">Select Position</option>
-                  <option value="TT">
-                    Technical Team (Hardware / Software)
+                  <option value="TRD">
+                    Technical Research & Development Unit
                   </option>
-                  <option value="RD">Research & Development</option>
                   <option value="SMM">Social Media Manager</option>
-                  <option value="EC">Events & Communications</option>
-                  <option value="EIC">Editor in Chief</option>
+
                   <option value="GD">Graphic Design</option>
+                  <option value="VE">Video Editor</option>
+                  <option value="CW">Content Writer</option>
+                  <option value="EC">External Affairs</option>
                 </select>
               </div>
 

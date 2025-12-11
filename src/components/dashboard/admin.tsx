@@ -2361,15 +2361,15 @@ function UsersCrud({
           President: 1,
           "Vice President": 2,
           Secretary: 3,
-          "Vice Secretary/Treasurer": 4,
-          "Research and Development Team": 5,
-          "Technical Team": 6,
-          "Communication,Events & HR": 7,
-          "Editor In Chief": 8,
-          "Graphics Designer": 9,
-          "Social Media Manager": 10,
-          Consultant: 11,
-          "Vice Treasurer": 12,
+          "Secretary/Treasurer": 4,
+          "Technical Research & Development Unit": 5,
+          "External Affairs": 6,
+          "Editor In Chief": 7,
+          "Graphics Designer": 8,
+          "Video Editor": 9,
+          "Content Writer": 10,
+          "Social Media Manager": 11,
+          Consultant: 12,
         };
 
         filteredUsers.sort((a: any, b: any) => {
@@ -3017,24 +3017,24 @@ function UsersCrud({
                         <option value="President">President</option>
                         <option value="Vice President">Vice President</option>
                         <option value="Secretary">Secretary</option>
-                        <option value="Vice Secretary/Treasurer">
-                          Vice Secretary/Treasurer
+                        <option value="Secretary/Treasurer">
+                          Secretary/Treasurer
                         </option>
-                        <option value="Vice Treasurer">Vice Treasurer</option>
-                        <option value="Technical Team">Technical Team</option>
+                        <option value="Technical Research & Development Unit">
+                          Technical Research & Development Unit
+                        </option>
                         <option value="Graphics Designer">
                           Graphics Designer
                         </option>
-                        <option value="Communication,Events & HR">
-                          Communication, Events & HR
+                        <option value="Video Editor">Video Editor</option>
+                        <option value="Content Writer">Content Writer</option>
+                        <option value="External Affairs">
+                          External Affairs
                         </option>
                         <option value="Social Media Manager">
                           Social Media Manager
                         </option>
                         <option value="Consultant">Consultant</option>
-                        <option value="Research and Development Team">
-                          Research and Development Team
-                        </option>
                         <option value="Editor In Chief">Editor In Chief</option>
                       </select>
                     </div>
@@ -3283,24 +3283,24 @@ function UsersCrud({
                         <option value="President">President</option>
                         <option value="Vice President">Vice President</option>
                         <option value="Secretary">Secretary</option>
-                        <option value="Vice Secretary/Treasurer">
-                          Vice Secretary/Treasurer
+                        <option value="Secretary/Treasurer">
+                          Secretary/Treasurer
                         </option>
-                        <option value="Vice Treasurer">Vice Treasurer</option>
-                        <option value="Technical Team">Technical Team</option>
+                        <option value="Technical Research & Development Unit">
+                          Technical Research & Development Unit
+                        </option>
                         <option value="Graphics Designer">
                           Graphics Designer
                         </option>
-                        <option value="Communication,Events & HR">
-                          Communication, Events & HR
+                        <option value="Video Editor">Video Editor</option>
+                        <option value="Content Writer">Content Writer</option>
+                        <option value="External Affairs">
+                          External Affairs
                         </option>
                         <option value="Social Media Manager">
                           Social Media Manager
                         </option>
                         <option value="Consultant">Consultant</option>
-                        <option value="Research and Development Team">
-                          Research and Development Team
-                        </option>
                         <option value="Editor In Chief">Editor In Chief</option>
                       </select>
                     </div>

@@ -6,7 +6,7 @@ on:
 jobs:
   deploy:
     name: Build & Deploy to VPS
-    runs-on: self-hosted
+    runs-on: [self-hosted, club emis]
     env:
       NEXT_PUBLIC_BACKEND_URL: ${{ secrets.NEXT_PUBLIC_BACKEND_URL }}
       NEXT_PUBLIC_CURRENT_BATCH_YEAR: ${{ secrets.NEXT_PUBLIC_CURRENT_BATCH_YEAR }}
