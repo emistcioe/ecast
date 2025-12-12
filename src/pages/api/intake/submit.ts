@@ -27,17 +27,44 @@ export default async function handler(
 
     const responseData = await response.json().catch(() => ({}));
 
+    const extractErrorMessage = (data: any): string | null => {
+      if (!data) return null;
+      if (typeof data === "string") return data;
+      if (Array.isArray(data) && data.length) {
+        const nested = extractErrorMessage(data[0]);
+        return nested || null;
+      }
+      if (typeof data === "object") {
+        if (typeof data.error !== "undefined") {
+          const nested = extractErrorMessage(data.error);
+          if (nested) return nested;
+        }
+        for (const value of Object.values(data)) {
+          const nested = extractErrorMessage(value);
+          if (nested) return nested;
+        }
+      }
+      return null;
+    };
+
     if (!response.ok) {
       let errorMessage = "Failed to submit form";
 
-      if (responseData.error) {
-        if (responseData.error.includes("email must make a unique set")) {
+      if (responseData) {
+        const backendMessage = extractErrorMessage(responseData);
+        if (
+          typeof backendMessage === "string" &&
+          backendMessage.includes("email must make a unique set")
+        ) {
           errorMessage =
             "The email is already used. Please use a unique email.";
-        } else if (responseData.error.includes("Enter a valid email address")) {
+        } else if (
+          typeof backendMessage === "string" &&
+          backendMessage.includes("Enter a valid email address")
+        ) {
           errorMessage = "Please enter a valid email address";
-        } else {
-          errorMessage = responseData.error;
+        } else if (backendMessage) {
+          errorMessage = backendMessage;
         }
       }
 

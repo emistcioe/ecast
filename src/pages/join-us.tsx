@@ -21,6 +21,7 @@ const ALLOWED_DEPARTMENTS = [
 const ALLOWED_DEPARTMENT_CODES = new Set(
   ALLOWED_DEPARTMENTS.map((dept) => dept.code)
 );
+const CAMPUS_ROLL_PATTERN = /^THA\d{3}B[A-Z]{2}\d{3}$/;
 
 const JoinUs = () => {
   const router = useRouter();
@@ -160,11 +161,20 @@ const JoinUs = () => {
       return;
     }
 
+    const normalizedRoll = rollNo.trim().toUpperCase();
+    if (!CAMPUS_ROLL_PATTERN.test(normalizedRoll)) {
+      showAlert(
+        "Campus roll must follow the format THA000BXX000 (all uppercase)."
+      );
+      setRollNo(normalizedRoll);
+      return;
+    }
+
     setIsSubmitting(true);
 
     const formData = new FormData(event.currentTarget);
     formData.append("name", name);
-    formData.append("campus_roll", rollNo);
+    formData.append("campus_roll", normalizedRoll);
     formData.append("email", email);
     formData.append("phone", phone);
     formData.append("department", department);
@@ -582,7 +592,7 @@ const JoinUs = () => {
                   id="rollNo"
                   name="rollNo"
                   value={rollNo}
-                  onChange={(e) => setRollNo(e.target.value)}
+                  onChange={(e) => setRollNo(e.target.value.toUpperCase())}
                   placeholder="e.g., THA080BEI01"
                   required
                   disabled={isSubmitting || formSubmitted}
