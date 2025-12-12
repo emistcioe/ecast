@@ -4,6 +4,24 @@ import { useIntake, IntakeStatus, IntakeInfo } from "@/lib/hooks/intake";
 import NavBar from "@/components/nav";
 import Footer from "@/components/footar";
 
+const ALLOWED_DEPARTMENTS = [
+  { code: "BAS", label: "Department Of Applied Science" },
+  { code: "BAR", label: "Department Of Architecture" },
+  {
+    code: "BAM",
+    label: "Department Of Automobile And Mechanical Engineering",
+  },
+  { code: "BCE", label: "Department Of Civil Engineering" },
+  {
+    code: "BEC",
+    label: "Department Of Electronics And Computer Engineering",
+  },
+  { code: "BIE", label: "Department Of Industrial Engineering" },
+];
+const ALLOWED_DEPARTMENT_CODES = new Set(
+  ALLOWED_DEPARTMENTS.map((dept) => dept.code)
+);
+
 const JoinUs = () => {
   const router = useRouter();
   const { fetchStatus, fetchInfo, submitForm } = useIntake();
@@ -59,6 +77,25 @@ const JoinUs = () => {
   const [link1, setLink1] = useState<string>("");
   const [link2, setLink2] = useState<string>("");
   const [link3, setLink3] = useState<string>("");
+
+  const departmentOptions =
+    intakeInfo?.departments && intakeInfo.departments.length > 0
+      ? (() => {
+          const filtered = intakeInfo.departments.filter((dept) =>
+            ALLOWED_DEPARTMENT_CODES.has(dept.code)
+          );
+          if (!filtered.length) return ALLOWED_DEPARTMENTS;
+          return filtered.map((dept) => {
+            const override = ALLOWED_DEPARTMENTS.find(
+              (item) => item.code === dept.code
+            );
+            return {
+              code: dept.code,
+              label: override?.label || dept.label,
+            };
+          });
+        })()
+      : ALLOWED_DEPARTMENTS;
 
   // Fetch intake status and info
   useEffect(() => {
@@ -606,7 +643,7 @@ const JoinUs = () => {
                     disabled={isSubmitting || formSubmitted}
                   >
                     <option value="">Select Department</option>
-                    {intakeInfo?.departments.map((dept) => (
+                    {departmentOptions.map((dept) => (
                       <option key={dept.code} value={dept.code}>
                         {dept.label}
                       </option>
