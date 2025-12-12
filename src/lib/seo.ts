@@ -9,7 +9,9 @@ export const siteConfig = {
   description:
     "ECAST (Electronic and Communication Arts and Science) is a dynamic student club at Thapathali Campus Institute of Engineering, fostering innovation in electronics, communication, and technology through workshops, projects, and research.",
   url: process.env.NEXT_PUBLIC_SITE_URL || "https://ecast.tcioe.edu.np",
-  ogImage: `${process.env.NEXT_PUBLIC_SITE_URL || "https://ecast.tcioe.edu.np"}/og-image.jpg`,
+  ogImage: `${
+    process.env.NEXT_PUBLIC_SITE_URL || "https://ecast.tcioe.edu.np"
+  }/og-image.png`,
   keywords: [
     "ECAST",
     "Thapathali Campus",
@@ -31,7 +33,7 @@ export const siteConfig = {
   publisher: "ECAST - Thapathali Campus",
   locale: "en_US",
   type: "website",
-  
+
   // Social Media
   social: {
     facebook: "https://www.facebook.com/ecast.tcioe",
@@ -40,16 +42,18 @@ export const siteConfig = {
     linkedin: "https://www.linkedin.com/company/ecast-tcioe",
     github: "https://github.com/EMISTCIOE",
   },
-  
+
   // Contact
   email: "ecast@tcioe.edu.np",
-  
+
   // Organization Schema
   organization: {
     "@type": "Organization",
     name: "ECAST",
     url: process.env.NEXT_PUBLIC_SITE_URL || "https://ecast.tcioe.edu.np",
-    logo: `${process.env.NEXT_PUBLIC_SITE_URL || "https://ecast.tcioe.edu.np"}/logo.png`,
+    logo: `${
+      process.env.NEXT_PUBLIC_SITE_URL || "https://ecast.tcioe.edu.np"
+    }/logo.png`,
     description:
       "Electronic and Communication Arts and Science Club at Thapathali Campus",
     address: {
@@ -264,7 +268,9 @@ export function generatePersonJsonLd({
 /**
  * Generate BreadcrumbList JSON-LD
  */
-export function generateBreadcrumbJsonLd(items: { name: string; url: string }[]) {
+export function generateBreadcrumbJsonLd(
+  items: { name: string; url: string }[]
+) {
   return {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
