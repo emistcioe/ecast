@@ -2,6 +2,12 @@ import type { NextApiRequest, NextApiResponse } from "next";
 
 const base = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8000";
 
+export const config = {
+  api: {
+    bodyParser: false,
+  },
+};
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
@@ -11,19 +17,22 @@ export default async function handler(
   }
 
   try {
-    // The form data is already parsed by the client, just forward it
-    // This is a proxy endpoint that will receive FormData from the client
-    const contentType = req.headers["content-type"] || "";
-
-    // Forward the request to the backend
-    const response = await fetch(`${base}/api/intake/form/`, {
-      method: "POST",
-      headers: {
-        // Forward content-type header
-        ...(contentType ? { "Content-Type": contentType } : {}),
-      },
-      body: req.body,
+    const headers: Record<string, string> = {};
+    Object.entries(req.headers).forEach(([key, value]) => {
+      if (typeof value === "string") {
+        headers[key] = value;
+      }
     });
+    delete headers.host;
+
+    const fetchOptions: RequestInit & { duplex?: "half" } = {
+      method: "POST",
+      headers,
+      body: req as any,
+      duplex: "half",
+    };
+
+    const response = await fetch(`${base}/api/intake/form/`, fetchOptions);
 
     const responseData = await response.json().catch(() => ({}));
 
