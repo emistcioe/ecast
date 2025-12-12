@@ -5,6 +5,7 @@ const base = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8000";
 export const config = {
   api: {
     bodyParser: false,
+    sizeLimit: "50mb",
   },
 };
 
