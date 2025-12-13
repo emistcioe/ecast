@@ -23,6 +23,7 @@ export default async function handler(
 
     // Get raw body from request
     const rawBody = await getRawBody(req);
+    console.log("Raw body length:", rawBody.length);
 
     // Forward the request to backend with all headers
     const response = await fetch(`${base}/api/ambassador-intake/form/`, {
@@ -33,7 +34,9 @@ export default async function handler(
       body: new Uint8Array(rawBody),
     });
 
+    console.log("Response status:", response.status);
     const responseData = await response.json().catch(() => ({}));
+    console.log("Response data:", responseData);
 
     if (!response.ok) {
       let errorMessage = "Failed to submit form";
@@ -53,8 +56,14 @@ export default async function handler(
     return res.status(201).json({ success: true, data: responseData });
   } catch (error) {
     console.error("Error submitting ambassador intake form:", error);
+    // Log the full error details
+    if (error instanceof Error) {
+      console.error("Error message:", error.message);
+      console.error("Error stack:", error.stack);
+    }
     return res.status(500).json({
       error: "An unexpected error occurred. Please try again.",
+      details: error instanceof Error ? error.message : String(error),
     });
   }
 }

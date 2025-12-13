@@ -1,4 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from "next";
+import { Readable } from "stream";
 
 // Use regular env variable for server-side, fallback to NEXT_PUBLIC for backward compatibility
 const base =
@@ -32,16 +33,21 @@ export default async function handler(
     });
     delete headers.host;
 
-    const fetchOptions: RequestInit & { duplex?: "half" } = {
+    // Convert IncomingMessage to ReadableStream for fetch
+    const body = Readable.toWeb(req as any) as ReadableStream;
+
+    console.log("Fetching:", `${base}/api/intake/form/`);
+    const response = await fetch(`${base}/api/intake/form/`, {
       method: "POST",
       headers,
-      body: req as any,
+      body,
+      // @ts-ignore - duplex is needed for streaming
       duplex: "half",
-    };
-
-    const response = await fetch(`${base}/api/intake/form/`, fetchOptions);
+    });
+    console.log("Response status:", response.status);
 
     const responseData = await response.json().catch(() => ({}));
+    console.log("Response data:", responseData);
 
     const extractErrorMessage = (data: any): string | null => {
       if (!data) return null;
@@ -90,6 +96,15 @@ export default async function handler(
     return res.status(201).json({ success: true, data: responseData });
   } catch (error) {
     console.error("Error submitting intake form:", error);
+    // Log the full error details
+    if (error instanceof Error) {
+      console.error("Error message:", error.message);
+      console.error("Error stack:", error.stack);
+    }
+    return res.status(500).json({
+      error: "An unexpected error occurred. Please try again.",
+      details: error instanceof Error ? error.message : String(error),
+    });
     return res.status(500).json({
       error: "An unexpected error occurred. Please try again.",
     });
