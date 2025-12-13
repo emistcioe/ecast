@@ -1,14 +1,25 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import getRawBody from "raw-body";
+import { Readable } from "stream";
 
-// Use regular env variable for server-side, fallback to NEXT_PUBLIC for backward compatibility
-const base = "https://cdn-ecast.tcioe.edu.np";
+const base =
+  process.env.BACKEND_URL ||
+  process.env.NEXT_PUBLIC_BACKEND_URL ||
+  "http://localhost:8000";
 
 export const config = {
   api: {
     bodyParser: false,
+    sizeLimit: "50mb",
   },
 };
+
+async function streamToBuffer(stream: Readable): Promise<Buffer> {
+  const chunks: Buffer[] = [];
+  for await (const chunk of stream) {
+    chunks.push(Buffer.from(chunk));
+  }
+  return Buffer.concat(chunks);
+}
 
 export default async function handler(
   req: NextApiRequest,
@@ -19,24 +30,39 @@ export default async function handler(
   }
 
   try {
-    console.log("Submitting to backend:", base);
+    console.log("=== AMBASSADOR INTAKE SUBMIT ===");
+    console.log("Backend URL:", base);
+    console.log("Content-Type:", req.headers["content-type"]);
 
-    // Get raw body from request
-    const rawBody = await getRawBody(req);
-    console.log("Raw body length:", rawBody.length);
+    // Read the entire request body as buffer
+    const bodyBuffer = await streamToBuffer(req);
+    console.log("Body size:", bodyBuffer.length);
 
-    // Forward the request to backend with all headers
-    const response = await fetch(`${base}/api/ambassador-intake/form/`, {
+    // Forward to Django backend
+    const backendUrl = `${base}/api/ambassador-intake/form/`;
+    console.log("Posting to:", backendUrl);
+
+    const response = await fetch(backendUrl, {
       method: "POST",
       headers: {
-        "content-type": req.headers["content-type"] || "",
+        "Content-Type": req.headers["content-type"] || "",
       },
-      body: new Uint8Array(rawBody),
+      body: new Uint8Array(bodyBuffer),
     });
 
-    console.log("Response status:", response.status);
-    const responseData = await response.json().catch(() => ({}));
-    console.log("Response data:", responseData);
+    console.log("Backend response status:", response.status);
+
+    let responseData;
+    const contentType = response.headers.get("content-type");
+    if (contentType?.includes("application/json")) {
+      responseData = await response.json();
+    } else {
+      const text = await response.text();
+      console.log("Non-JSON response:", text);
+      responseData = { message: text };
+    }
+
+    console.log("Backend response data:", responseData);
 
     if (!response.ok) {
       let errorMessage = "Failed to submit form";

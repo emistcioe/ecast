@@ -1,7 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { Readable } from "stream";
 
-// Use regular env variable for server-side, fallback to NEXT_PUBLIC for backward compatibility
 const base =
   process.env.BACKEND_URL ||
   process.env.NEXT_PUBLIC_BACKEND_URL ||
@@ -14,6 +13,14 @@ export const config = {
   },
 };
 
+async function streamToBuffer(stream: Readable): Promise<Buffer> {
+  const chunks: Buffer[] = [];
+  for await (const chunk of stream) {
+    chunks.push(Buffer.from(chunk));
+  }
+  return Buffer.concat(chunks);
+}
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
@@ -23,31 +30,39 @@ export default async function handler(
   }
 
   try {
-    console.log("Submitting to backend:", base);
+    console.log("=== INTAKE SUBMIT ===");
+    console.log("Backend URL:", base);
+    console.log("Content-Type:", req.headers["content-type"]);
 
-    const headers: Record<string, string> = {};
-    Object.entries(req.headers).forEach(([key, value]) => {
-      if (typeof value === "string") {
-        headers[key] = value;
-      }
-    });
-    delete headers.host;
+    // Read the entire request body as buffer
+    const bodyBuffer = await streamToBuffer(req);
+    console.log("Body size:", bodyBuffer.length);
 
-    // Convert IncomingMessage to ReadableStream for fetch
-    const body = Readable.toWeb(req as any) as ReadableStream;
+    // Forward to Django backend
+    const backendUrl = `${base}/api/intake/form/`;
+    console.log("Posting to:", backendUrl);
 
-    console.log("Fetching:", `${base}/api/intake/form/`);
-    const response = await fetch(`${base}/api/intake/form/`, {
+    const response = await fetch(backendUrl, {
       method: "POST",
-      headers,
-      body,
-      // @ts-ignore - duplex is needed for streaming
-      duplex: "half",
+      headers: {
+        "Content-Type": req.headers["content-type"] || "",
+      },
+      body: new Uint8Array(bodyBuffer),
     });
-    console.log("Response status:", response.status);
 
-    const responseData = await response.json().catch(() => ({}));
-    console.log("Response data:", responseData);
+    console.log("Backend response status:", response.status);
+
+    let responseData;
+    const contentType = response.headers.get("content-type");
+    if (contentType?.includes("application/json")) {
+      responseData = await response.json();
+    } else {
+      const text = await response.text();
+      console.log("Non-JSON response:", text);
+      responseData = { message: text };
+    }
+
+    console.log("Backend response data:", responseData);
 
     const extractErrorMessage = (data: any): string | null => {
       if (!data) return null;
