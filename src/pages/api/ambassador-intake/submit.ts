@@ -2,10 +2,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import getRawBody from "raw-body";
 
 // Use regular env variable for server-side, fallback to NEXT_PUBLIC for backward compatibility
-const base =
-  process.env.BACKEND_URL ||
-  process.env.NEXT_PUBLIC_BACKEND_URL ||
-  "http://localhost:8000";
+const base = "https://cdn-ecast.tcioe.edu.np";
 
 export const config = {
   api: {
@@ -33,7 +30,7 @@ export default async function handler(
       headers: {
         "content-type": req.headers["content-type"] || "",
       },
-      body: rawBody,
+      body: new Uint8Array(rawBody),
     });
 
     const responseData = await response.json().catch(() => ({}));
