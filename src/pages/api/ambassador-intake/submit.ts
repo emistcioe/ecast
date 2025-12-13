@@ -1,6 +1,17 @@
 import type { NextApiRequest, NextApiResponse } from "next";
+import getRawBody from "raw-body";
 
-const base = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8000";
+// Use regular env variable for server-side, fallback to NEXT_PUBLIC for backward compatibility
+const base =
+  process.env.BACKEND_URL ||
+  process.env.NEXT_PUBLIC_BACKEND_URL ||
+  "http://localhost:8000";
+
+export const config = {
+  api: {
+    bodyParser: false,
+  },
+};
 
 export default async function handler(
   req: NextApiRequest,
@@ -11,14 +22,18 @@ export default async function handler(
   }
 
   try {
-    const contentType = req.headers["content-type"] || "";
+    console.log("Submitting to backend:", base);
 
+    // Get raw body from request
+    const rawBody = await getRawBody(req);
+
+    // Forward the request to backend with all headers
     const response = await fetch(`${base}/api/ambassador-intake/form/`, {
       method: "POST",
       headers: {
-        ...(contentType ? { "Content-Type": contentType } : {}),
+        "content-type": req.headers["content-type"] || "",
       },
-      body: req.body,
+      body: rawBody,
     });
 
     const responseData = await response.json().catch(() => ({}));
@@ -46,4 +61,3 @@ export default async function handler(
     });
   }
 }
-

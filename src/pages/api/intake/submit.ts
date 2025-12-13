@@ -1,6 +1,10 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 
-const base = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8000";
+// Use regular env variable for server-side, fallback to NEXT_PUBLIC for backward compatibility
+const base =
+  process.env.BACKEND_URL ||
+  process.env.NEXT_PUBLIC_BACKEND_URL ||
+  "http://localhost:8000";
 
 export const config = {
   api: {
@@ -18,6 +22,8 @@ export default async function handler(
   }
 
   try {
+    console.log("Submitting to backend:", base);
+
     const headers: Record<string, string> = {};
     Object.entries(req.headers).forEach(([key, value]) => {
       if (typeof value === "string") {
