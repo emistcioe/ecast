@@ -4,7 +4,7 @@ import { Readable } from "stream";
 const base =
   process.env.BACKEND_URL ||
   process.env.NEXT_PUBLIC_BACKEND_URL ||
-  "http://localhost:8000";
+  "https://cdn-ecast.tcioe.edu.np";
 
 export const config = {
   api: {
