@@ -19,6 +19,8 @@ import CreateBlogModal from "@/components/modals/CreateBlogModal";
 import CreateProjectModal from "@/components/modals/CreateProjectModal";
 import CreateEventModal from "@/components/modals/CreateEventModal";
 import CreateGalleryModal from "@/components/modals/CreateGalleryModal";
+import LagAdminSection from "@/components/lag/LagAdminSection";
+import LagVerificationSection from "@/components/lag/LagVerificationSection";
 // Section Components
 import OverviewSection from "@/components/dashboard-member/sections/OverviewSection";
 import NoticesSection from "@/components/dashboard-member/sections/NoticesSection";
@@ -170,6 +172,15 @@ export default function MemberDashboard() {
     committee_position?: string;
     avatarUrl?: string;
   }>();
+  const lagApproverPositions = [
+    "President",
+    "Vice President",
+    "Secretary",
+    "Secretary/Treasurer",
+  ];
+  const canLagApprove = lagApproverPositions.includes(
+    sidebarUser?.committee_position || ""
+  );
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [activeSection, setActiveSection] = useState("overview");
   const [notices, setNotices] = useState<Notice[]>([]);
@@ -687,6 +698,29 @@ export default function MemberDashboard() {
                 },
               ],
             },
+            {
+              title: "LAG",
+              items: [
+                ...(canLagApprove
+                  ? [
+                      {
+                        id: "lag-admin",
+                        label: "LAG Approvals",
+                        icon: ClipboardDocumentCheckIcon as any,
+                        active: activeSection === "lag-admin",
+                        onClick: () => setActiveSection("lag-admin"),
+                      },
+                    ]
+                  : []),
+                {
+                  id: "lag-verify",
+                  label: "LAG Verification",
+                  icon: CheckCircleIcon as any,
+                  active: activeSection === "lag-verify",
+                  onClick: () => setActiveSection("lag-verify"),
+                },
+              ],
+            },
           ]}
         />
 
@@ -997,6 +1031,12 @@ export default function MemberDashboard() {
               }}
             />
           )}
+
+          {activeSection === "lag-admin" && canLagApprove && (
+            <LagAdminSection />
+          )}
+
+          {activeSection === "lag-verify" && <LagVerificationSection />}
         </div>
 
         {/* Modals - Placed at root level for global accessibility */}

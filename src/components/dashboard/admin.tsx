@@ -25,6 +25,8 @@ import AdminGalleryCrud from "@/components/admin/GalleryCrud";
 import ResearchSection from "@/components/dashboard-member/sections/ResearchSection";
 import CreateResearchModal from "@/components/dashboard-member/modals/CreateResearchModal";
 import EditResearchModal from "@/components/dashboard-member/modals/EditResearchModal";
+import LagAdminSection from "@/components/lag/LagAdminSection";
+import LagVerificationSection from "@/components/lag/LagVerificationSection";
 
 import { ComprehensiveAnalyticsDashboard } from "@/components/analytics/ComprehensiveAnalyticsDashboard";
 import { ChartCard } from "@/components/analytics/Charts";
@@ -761,6 +763,25 @@ export default function AdminDashboard() {
                 ],
               },
               {
+                title: "LAG",
+                items: [
+                  {
+                    id: "lag-admin",
+                    label: "LAG Approvals",
+                    icon: ClipboardDocumentCheckIcon,
+                    active: activeSection === "lag-admin",
+                    onClick: () => setActiveSection("lag-admin"),
+                  },
+                  {
+                    id: "lag-verify",
+                    label: "LAG Verification",
+                    icon: CheckIcon,
+                    active: activeSection === "lag-verify",
+                    onClick: () => setActiveSection("lag-verify"),
+                  },
+                ],
+              },
+              {
                 title: "Account",
                 items: [
                   {
@@ -1314,6 +1335,10 @@ export default function AdminDashboard() {
               onReject={handleRejectResearch}
             />
           )}
+
+          {activeSection === "lag-admin" && <LagAdminSection />}
+
+          {activeSection === "lag-verify" && <LagVerificationSection />}
 
           {activeSection === "users" && (
             <UsersCrud
