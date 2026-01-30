@@ -15,18 +15,27 @@ type Material = {
   available_quantity?: number;
 };
 
+type PublicLoan = {
+  id: string;
+  batch_label?: string;
+  issued_at?: string;
+  items: { material_name: string; quantity: number }[];
+};
+
 export default function LagInventoryPage() {
-  const { listMaterials } = useLag();
+  const { listMaterials, listPublicLoans } = useLag();
   const [materials, setMaterials] = useState<Material[]>([]);
+  const [loans, setLoans] = useState<PublicLoan[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     let mounted = true;
-    listMaterials()
-      .then((data) => {
+    Promise.all([listMaterials(), listPublicLoans()])
+      .then(([materialsData, loansData]) => {
         if (!mounted) return;
-        setMaterials(data);
+        setMaterials(materialsData);
+        setLoans(loansData);
       })
       .catch(() => {
         if (!mounted) return;
@@ -47,7 +56,7 @@ export default function LagInventoryPage() {
         <title>LAG Inventory</title>
       </Head>
       <NavBar />
-      <main className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-black text-white pt-24">
+      <main className="min-h-screen bg-gray-950 text-white pt-24">
         <section className="max-w-6xl mx-auto px-4 md:px-6 pb-16">
           <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
             <div>
@@ -75,7 +84,7 @@ export default function LagInventoryPage() {
             {materials.map((m) => (
               <div
                 key={m.id}
-                className="bg-gray-900/60 border border-gray-800 rounded-2xl overflow-hidden shadow-lg"
+                className="bg-gray-900 border border-gray-800 rounded-lg overflow-hidden"
               >
                 <div className="h-44 bg-gray-950 flex items-center justify-center overflow-hidden">
                   {m.image_url ? (
@@ -100,13 +109,13 @@ export default function LagInventoryPage() {
                     {m.description || "No description"}
                   </p>
                   <div className="grid grid-cols-2 gap-3 mt-4 text-xs text-gray-400">
-                    <div className="bg-gray-950/60 border border-gray-800 rounded-lg p-2">
+                    <div className="bg-gray-950 border border-gray-800 rounded-lg p-2">
                       <div>Total</div>
                       <div className="text-white font-semibold">
                         {m.total_quantity}
                       </div>
                     </div>
-                    <div className="bg-gray-950/60 border border-gray-800 rounded-lg p-2">
+                    <div className="bg-gray-950 border border-gray-800 rounded-lg p-2">
                       <div>Max loans</div>
                       <div className="text-white font-semibold">
                         {m.max_concurrent_loans}
@@ -116,6 +125,44 @@ export default function LagInventoryPage() {
                 </div>
               </div>
             ))}
+          </div>
+
+          <div className="mt-12 bg-gray-900 border border-gray-800 rounded-lg p-6">
+            <h2 className="text-xl font-semibold">Current Lendings</h2>
+            <p className="text-gray-400 text-sm mt-1">
+              Shows batch and items currently issued (no personal names).
+            </p>
+            <div className="mt-4 space-y-3">
+              {loans.length === 0 && (
+                <div className="text-sm text-gray-400">
+                  No active lendings.
+                </div>
+              )}
+              {loans.map((loan) => (
+                <div
+                  key={loan.id}
+                  className="bg-gray-950 border border-gray-800 rounded-lg p-4"
+                >
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="font-semibold text-cyan-200">
+                      {loan.batch_label || "Batch"}
+                    </span>
+                    <span className="text-gray-500">
+                      {loan.issued_at
+                        ? new Date(loan.issued_at).toLocaleString()
+                        : "-"}
+                    </span>
+                  </div>
+                  <div className="mt-2 text-sm text-gray-300">
+                    {loan.items.map((item, idx) => (
+                      <div key={idx}>
+                        {item.material_name} x{item.quantity}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </section>
       </main>

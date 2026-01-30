@@ -4,6 +4,11 @@ import { useLag } from "@/lib/hooks/lag";
 type LagRequest = {
   id: string;
   requester_email: string;
+  requester_name?: string;
+  roll_number?: string;
+  batch_label?: string;
+  requested_from?: string;
+  requested_to?: string;
   status: string;
   created_at: string;
   approved_at?: string;
@@ -91,7 +96,7 @@ export default function LagVerificationSection() {
       )}
 
       <div className="grid lg:grid-cols-2 gap-6">
-        <div className="bg-gray-900/60 border border-gray-800 rounded-2xl p-6">
+        <div className="bg-gray-900 border border-gray-800 rounded-lg p-6">
           <h2 className="text-xl font-semibold">Approved requests</h2>
           <div className="mt-4 space-y-4">
             {approved.length === 0 && (
@@ -100,13 +105,22 @@ export default function LagVerificationSection() {
             {approved.map((r) => (
               <div
                 key={r.id}
-                className="bg-gray-950/70 border border-gray-800 rounded-xl p-4"
+                className="bg-gray-950 border border-gray-800 rounded-lg p-4"
               >
                 <div className="flex items-start justify-between gap-3">
                   <div>
-                    <div className="font-semibold">{r.requester_email}</div>
+                    <div className="font-semibold">
+                      {r.requester_name || "Student"}
+                    </div>
+                    <div className="text-xs text-gray-400">
+                      {r.batch_label || r.roll_number || "-"}
+                    </div>
                     <div className="text-xs text-gray-500">
                       Approved: {formatDate(r.approved_at)}
+                    </div>
+                    <div className="text-xs text-gray-500">
+                      Duration: {formatDate(r.requested_from)} →{" "}
+                      {formatDate(r.requested_to)}
                     </div>
                   </div>
                   <div className="text-xs text-gray-400">{r.status}</div>
@@ -129,7 +143,7 @@ export default function LagVerificationSection() {
           </div>
         </div>
 
-        <div className="bg-gray-900/60 border border-gray-800 rounded-2xl p-6">
+        <div className="bg-gray-900 border border-gray-800 rounded-lg p-6">
           <h2 className="text-xl font-semibold">Issued requests</h2>
           <div className="mt-4 space-y-4">
             {issued.length === 0 && (
@@ -138,13 +152,22 @@ export default function LagVerificationSection() {
             {issued.map((r) => (
               <div
                 key={r.id}
-                className="bg-gray-950/70 border border-gray-800 rounded-xl p-4"
+                className="bg-gray-950 border border-gray-800 rounded-lg p-4"
               >
                 <div className="flex items-start justify-between gap-3">
                   <div>
-                    <div className="font-semibold">{r.requester_email}</div>
+                    <div className="font-semibold">
+                      {r.requester_name || "Student"}
+                    </div>
+                    <div className="text-xs text-gray-400">
+                      {r.batch_label || r.roll_number || "-"}
+                    </div>
                     <div className="text-xs text-gray-500">
                       Issued: {formatDate(r.issued_at)}
+                    </div>
+                    <div className="text-xs text-gray-500">
+                      Duration: {formatDate(r.requested_from)} →{" "}
+                      {formatDate(r.requested_to)}
                     </div>
                   </div>
                   <div className="text-xs text-gray-400">{r.status}</div>

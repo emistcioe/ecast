@@ -14,6 +14,12 @@ type Material = {
 type LagRequest = {
   id: string;
   requester_email: string;
+  requester_name?: string;
+  phone_number?: string;
+  roll_number?: string;
+  requested_from?: string;
+  requested_to?: string;
+  batch_label?: string;
   status: string;
   created_at: string;
   items: { material_name: string; quantity: number }[];
@@ -168,7 +174,7 @@ export default function LagAdminSection() {
       )}
 
       <div className="grid lg:grid-cols-2 gap-6">
-        <div className="bg-gray-900/60 border border-gray-800 rounded-2xl p-6">
+        <div className="bg-gray-900 border border-gray-800 rounded-lg p-6">
           <h2 className="text-xl font-semibold">
             {editingId ? "Edit material" : "Add material"}
           </h2>
@@ -238,7 +244,7 @@ export default function LagAdminSection() {
           </div>
         </div>
 
-        <div className="bg-gray-900/60 border border-gray-800 rounded-2xl p-6">
+        <div className="bg-gray-900 border border-gray-800 rounded-lg p-6">
           <h2 className="text-xl font-semibold">Pending approvals</h2>
           <div className="mt-4 space-y-4">
             {requests.length === 0 && (
@@ -249,13 +255,28 @@ export default function LagAdminSection() {
             {requests.map((r) => (
               <div
                 key={r.id}
-                className="bg-gray-950/70 border border-gray-800 rounded-xl p-4"
+                className="bg-gray-950 border border-gray-800 rounded-lg p-4"
               >
                 <div className="flex items-start justify-between gap-3">
                   <div>
-                    <div className="font-semibold">{r.requester_email}</div>
+                    <div className="font-semibold">
+                      {r.requester_name || "Student"}
+                    </div>
+                    <div className="text-xs text-gray-400">
+                      {r.batch_label || r.roll_number || "-"}
+                    </div>
                     <div className="text-xs text-gray-500">
                       Requested: {formatDate(r.created_at)}
+                    </div>
+                    <div className="text-xs text-gray-500">
+                      Duration: {formatDate(r.requested_from)} →{" "}
+                      {formatDate(r.requested_to)}
+                    </div>
+                    <div className="text-xs text-gray-500">
+                      Email: {r.requester_email}
+                    </div>
+                    <div className="text-xs text-gray-500">
+                      Phone: {r.phone_number || "-"}
                     </div>
                   </div>
                   <div className="text-xs text-gray-400">{r.status}</div>
@@ -287,13 +308,13 @@ export default function LagAdminSection() {
         </div>
       </div>
 
-      <div className="mt-8 bg-gray-900/60 border border-gray-800 rounded-2xl p-6">
+      <div className="mt-8 bg-gray-900 border border-gray-800 rounded-lg p-6">
         <h2 className="text-xl font-semibold">Inventory</h2>
         <div className="mt-4 grid md:grid-cols-2 gap-4">
           {materials.map((m) => (
             <div
               key={m.id}
-              className="bg-gray-950/70 border border-gray-800 rounded-xl p-4 flex gap-4"
+              className="bg-gray-950 border border-gray-800 rounded-lg p-4 flex gap-4"
             >
               <div className="w-20 h-20 bg-gray-900 rounded-lg overflow-hidden flex items-center justify-center">
                 {m.image_url ? (

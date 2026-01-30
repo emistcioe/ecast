@@ -26,6 +26,11 @@ export default function LagLendNowPage() {
   const [materials, setMaterials] = useState<Material[]>([]);
   const [cart, setCart] = useState<Record<string, number>>({});
   const [notes, setNotes] = useState("");
+  const [requesterName, setRequesterName] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [rollNumber, setRollNumber] = useState("");
+  const [requestedFrom, setRequestedFrom] = useState("");
+  const [requestedTo, setRequestedTo] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<any>(null);
@@ -122,6 +127,32 @@ export default function LagLendNowPage() {
       setError("OTP verification required");
       return;
     }
+    if (!requesterName.trim()) {
+      setError("Name is required");
+      return;
+    }
+    if (!phoneNumber.trim()) {
+      setError("Phone number is required");
+      return;
+    }
+    if (!rollNumber.trim()) {
+      setError("Roll number is required");
+      return;
+    }
+    if (!requestedFrom || !requestedTo) {
+      setError("Requested duration is required");
+      return;
+    }
+    const fromDate = new Date(requestedFrom);
+    const toDate = new Date(requestedTo);
+    if (Number.isNaN(fromDate.getTime()) || Number.isNaN(toDate.getTime())) {
+      setError("Invalid requested duration");
+      return;
+    }
+    if (fromDate >= toDate) {
+      setError("End time must be after start time");
+      return;
+    }
     if (cartItems.length === 0) {
       setError("Please add items to cart");
       return;
@@ -129,6 +160,11 @@ export default function LagLendNowPage() {
     setLoading(true);
     try {
       const payload = {
+        requester_name: requesterName.trim(),
+        phone_number: phoneNumber.trim(),
+        roll_number: rollNumber.trim(),
+        requested_from: requestedFrom,
+        requested_to: requestedTo,
         items: cartItems.map((c) => ({
           material_id: c.material.id,
           quantity: c.quantity,
@@ -139,6 +175,11 @@ export default function LagLendNowPage() {
       setSuccess(data);
       setCart({});
       setNotes("");
+      setRequesterName("");
+      setPhoneNumber("");
+      setRollNumber("");
+      setRequestedFrom("");
+      setRequestedTo("");
       setStep("done");
     } catch (e) {
       setError("Failed to submit request");
@@ -153,7 +194,7 @@ export default function LagLendNowPage() {
         <title>LAG Lend Now</title>
       </Head>
       <NavBar />
-      <main className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-black text-white pt-24">
+      <main className="min-h-screen bg-gray-950 text-white pt-24">
         <section className="max-w-6xl mx-auto px-4 md:px-6 pb-16">
           <div className="flex items-center justify-between flex-wrap gap-4">
             <div>
@@ -175,7 +216,7 @@ export default function LagLendNowPage() {
 
           {step === "email" && (
             <div className="mt-8 grid md:grid-cols-2 gap-6">
-              <div className="bg-gray-900/60 border border-gray-800 rounded-2xl p-6">
+              <div className="bg-gray-900 border border-gray-800 rounded-lg p-6">
                 <h2 className="text-xl font-semibold">Enter your email</h2>
                 <p className="text-gray-400 text-sm mt-2">
                   We will send a one-time code to your college email.
@@ -197,7 +238,7 @@ export default function LagLendNowPage() {
                   {loading ? "Sending..." : "Send OTP"}
                 </button>
               </div>
-              <div className="bg-gray-900/40 border border-gray-800 rounded-2xl p-6">
+              <div className="bg-gray-900 border border-gray-800 rounded-lg p-6">
                 <h3 className="text-lg font-semibold">Why OTP?</h3>
                 <p className="text-gray-400 text-sm mt-2">
                   We verify every request with your official college email to keep
@@ -209,7 +250,7 @@ export default function LagLendNowPage() {
 
           {step === "otp" && (
             <div className="mt-8 grid md:grid-cols-2 gap-6">
-              <div className="bg-gray-900/60 border border-gray-800 rounded-2xl p-6">
+              <div className="bg-gray-900 border border-gray-800 rounded-lg p-6">
                 <h2 className="text-xl font-semibold">Enter OTP</h2>
                 <p className="text-gray-400 text-sm mt-2">
                   Check {email} for your verification code.
@@ -239,7 +280,7 @@ export default function LagLendNowPage() {
                   </button>
                 </div>
               </div>
-              <div className="bg-gray-900/40 border border-gray-800 rounded-2xl p-6">
+              <div className="bg-gray-900 border border-gray-800 rounded-lg p-6">
                 <h3 className="text-lg font-semibold">Need a new code?</h3>
                 <p className="text-gray-400 text-sm mt-2">
                   Wait a minute and request OTP again if needed.
@@ -250,7 +291,7 @@ export default function LagLendNowPage() {
 
           {step === "cart" && (
             <div className="mt-8 grid lg:grid-cols-3 gap-6">
-              <div className="lg:col-span-2 bg-gray-900/60 border border-gray-800 rounded-2xl p-6">
+              <div className="lg:col-span-2 bg-gray-900 border border-gray-800 rounded-lg p-6">
                 <h2 className="text-xl font-semibold">Choose materials</h2>
                 <p className="text-gray-400 text-sm mt-2">
                   Add items to your cart. Availability is limited.
@@ -265,7 +306,7 @@ export default function LagLendNowPage() {
                     return (
                       <div
                         key={m.id}
-                        className="flex flex-col sm:flex-row gap-4 bg-gray-950/60 border border-gray-800 rounded-xl p-4"
+                        className="flex flex-col sm:flex-row gap-4 bg-gray-950 border border-gray-800 rounded-lg p-4"
                       >
                         <div className="w-full sm:w-32 h-24 bg-gray-900 rounded-lg overflow-hidden flex items-center justify-center">
                           {m.image_url ? (
@@ -313,7 +354,7 @@ export default function LagLendNowPage() {
                   })}
                 </div>
               </div>
-              <div className="bg-gray-900/60 border border-gray-800 rounded-2xl p-6">
+              <div className="bg-gray-900 border border-gray-800 rounded-lg p-6">
                 <h2 className="text-xl font-semibold">Your cart</h2>
                 <div className="mt-4 space-y-3">
                   {cartItems.length === 0 && (
@@ -332,6 +373,51 @@ export default function LagLendNowPage() {
                   ))}
                 </div>
                 <div className="mt-6">
+                  <div className="grid gap-3">
+                    <label className="text-sm text-gray-400">Name</label>
+                    <input
+                      value={requesterName}
+                      onChange={(e) => setRequesterName(e.target.value)}
+                      className="w-full bg-gray-950/70 border border-gray-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-cyan-500/40"
+                      placeholder="Your full name"
+                    />
+                    <label className="text-sm text-gray-400">Phone number</label>
+                    <input
+                      value={phoneNumber}
+                      onChange={(e) => setPhoneNumber(e.target.value)}
+                      className="w-full bg-gray-950/70 border border-gray-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-cyan-500/40"
+                      placeholder="98XXXXXXXX"
+                    />
+                    <label className="text-sm text-gray-400">Roll number</label>
+                    <input
+                      value={rollNumber}
+                      onChange={(e) => setRollNumber(e.target.value)}
+                      className="w-full bg-gray-950/70 border border-gray-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-cyan-500/40"
+                      placeholder="THA080BCT"
+                    />
+                    <div className="grid sm:grid-cols-2 gap-3">
+                      <div>
+                        <label className="text-sm text-gray-400">From</label>
+                        <input
+                          type="datetime-local"
+                          value={requestedFrom}
+                          onChange={(e) => setRequestedFrom(e.target.value)}
+                          className="mt-1 w-full bg-gray-950/70 border border-gray-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-cyan-500/40"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-sm text-gray-400">To</label>
+                        <input
+                          type="datetime-local"
+                          value={requestedTo}
+                          onChange={(e) => setRequestedTo(e.target.value)}
+                          className="mt-1 w-full bg-gray-950/70 border border-gray-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-cyan-500/40"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="mt-4">
                   <label className="text-sm text-gray-400">Notes (optional)</label>
                   <textarea
                     value={notes}
@@ -353,7 +439,7 @@ export default function LagLendNowPage() {
           )}
 
           {step === "done" && (
-            <div className="mt-8 bg-gray-900/60 border border-gray-800 rounded-2xl p-6">
+            <div className="mt-8 bg-gray-900 border border-gray-800 rounded-lg p-6">
               <h2 className="text-xl font-semibold">Request submitted</h2>
               <p className="text-gray-400 text-sm mt-2">
                 Your request is pending approval. You will be notified once it is

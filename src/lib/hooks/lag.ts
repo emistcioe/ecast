@@ -62,7 +62,18 @@ export function useLag() {
   }, []);
 
   const createRequest = useCallback(
-    async (token: string, payload: { items: { material_id: string; quantity: number }[]; notes?: string }) => {
+    async (
+      token: string,
+      payload: {
+        requester_name: string;
+        phone_number: string;
+        roll_number: string;
+        requested_from: string;
+        requested_to: string;
+        items: { material_id: string; quantity: number }[];
+        notes?: string;
+      }
+    ) => {
       const res = await fetch(`${base}/api/lag/requests/create/`, {
         method: "POST",
         headers: {
@@ -82,6 +93,12 @@ export function useLag() {
       headers: { "X-LAG-Token": token },
     });
     if (!res.ok) throw new Error("list my requests failed");
+    return res.json();
+  }, []);
+
+  const listPublicLoans = useCallback(async () => {
+    const res = await fetch(`${base}/api/lag/public/loans/`);
+    if (!res.ok) throw new Error("list public loans failed");
     return res.json();
   }, []);
 
@@ -133,6 +150,7 @@ export function useLag() {
     verifyOtp,
     createRequest,
     listMyRequests,
+    listPublicLoans,
     listRequests,
     approveRequest,
     rejectRequest,

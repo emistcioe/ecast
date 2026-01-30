@@ -274,7 +274,11 @@ export default function AdminDashboard() {
 
   // Auto-assign role based on committee position in create mode (only for committee mode)
   useEffect(() => {
-    if (cmPosition === "President" || cmPosition === "Vice President") {
+    if (
+      cmPosition === "President" ||
+      cmPosition === "Vice President" ||
+      cmPosition === "Secretary/Treasurer"
+    ) {
       setCmRole("ADMIN");
     } else if (cmPosition) {
       setCmRole("MEMBER");
@@ -2471,7 +2475,8 @@ function UsersCrud({
     if (mode === "committee") {
       if (
         editCommitteePos === "President" ||
-        editCommitteePos === "Vice President"
+        editCommitteePos === "Vice President" ||
+        editCommitteePos === "Secretary/Treasurer"
       ) {
         setEditRole("ADMIN");
       } else if (editCommitteePos) {
@@ -3080,8 +3085,9 @@ function UsersCrud({
                       </select>
                       <p className="text-xs text-gray-400 mt-1">
                         {cm.cmPosition === "President" ||
-                        cm.cmPosition === "Vice President"
-                          ? "President & Vice President are automatically assigned ADMIN role"
+                        cm.cmPosition === "Vice President" ||
+                        cm.cmPosition === "Secretary/Treasurer"
+                          ? "President, Vice President & Secretary/Treasurer are automatically assigned ADMIN role"
                           : "Other positions are assigned MEMBER role"}
                       </p>
                     </div>
@@ -3346,8 +3352,9 @@ function UsersCrud({
                       </select>
                       <p className="text-xs text-gray-400 mt-1">
                         {editCommitteePos === "President" ||
-                        editCommitteePos === "Vice President"
-                          ? "President & Vice President are automatically assigned ADMIN role"
+                        editCommitteePos === "Vice President" ||
+                        editCommitteePos === "Secretary/Treasurer"
+                          ? "President, Vice President & Secretary/Treasurer are automatically assigned ADMIN role"
                           : "Other positions are assigned MEMBER role"}
                       </p>
                     </div>
