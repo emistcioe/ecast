@@ -747,15 +747,13 @@ const JoinUs = () => {
                   disabled={isSubmitting || formSubmitted}
                 >
                   <option value="">Select Position</option>
-                  <option value="TRD">
-                    Technical Research & Development Unit
-                  </option>
-                  <option value="SMM">Social Media Manager</option>
-
-                  <option value="GD">Graphic Design</option>
+                  <option value="GD">Graphic Designer</option>
                   <option value="VE">Video Editor</option>
-                  <option value="CW">Content Writer</option>
-                  <option value="EC">External Affairs</option>
+                  <option value="CM">Communications Manager</option>
+                  <option value="EOC">Events & Outreach Coordinator</option>
+                  <option value="TRA">Technical Research Associate</option>
+                  <option value="CCA">Creative Content Associate</option>
+                  <option value="IM">Inventory Manager</option>
                 </select>
               </div>
 
