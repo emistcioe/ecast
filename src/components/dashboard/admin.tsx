@@ -27,6 +27,7 @@ import CreateResearchModal from "@/components/dashboard-member/modals/CreateRese
 import EditResearchModal from "@/components/dashboard-member/modals/EditResearchModal";
 import LagAdminSection from "@/components/lag/LagAdminSection";
 import LagVerificationSection from "@/components/lag/LagVerificationSection";
+import LagInventorySection from "@/components/lag/LagInventorySection";
 
 import { ComprehensiveAnalyticsDashboard } from "@/components/analytics/ComprehensiveAnalyticsDashboard";
 import { ChartCard } from "@/components/analytics/Charts";
@@ -49,6 +50,7 @@ import {
   PresentationChartLineIcon,
   UserPlusIcon,
   Bars3Icon,
+  ArchiveBoxIcon,
 } from "@heroicons/react/24/outline";
 
 const base = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8000";
@@ -783,6 +785,13 @@ export default function AdminDashboard() {
                     active: activeSection === "lag-verify",
                     onClick: () => setActiveSection("lag-verify"),
                   },
+                  {
+                    id: "lag-inventory",
+                    label: "LAG Inventory",
+                    icon: ArchiveBoxIcon,
+                    active: activeSection === "lag-inventory",
+                    onClick: () => setActiveSection("lag-inventory"),
+                  },
                 ],
               },
               {
@@ -813,7 +822,7 @@ export default function AdminDashboard() {
         >
           {activeSection === "overview" && (
             <div className="max-w-7xl mx-auto space-y-4">
-              <h1 className="text-3xl font-bold mb-4 text-white">
+              <h1 className="text-3xl font-bold mb-4 text-teal-50">
                 Dashboard Overview
               </h1>
 
@@ -1343,6 +1352,8 @@ export default function AdminDashboard() {
           {activeSection === "lag-admin" && <LagAdminSection />}
 
           {activeSection === "lag-verify" && <LagVerificationSection />}
+
+          {activeSection === "lag-inventory" && <LagInventorySection />}
 
           {activeSection === "users" && (
             <UsersCrud
