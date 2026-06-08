@@ -47,7 +47,14 @@ export function useLag() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email }),
     });
-    if (!res.ok) throw new Error("otp request failed");
+    if (!res.ok) {
+      let detail = "Failed to send OTP";
+      try {
+        const body = await res.json();
+        if (body?.detail) detail = body.detail;
+      } catch {}
+      throw new Error(detail);
+    }
     return res.json();
   }, []);
 
@@ -57,7 +64,14 @@ export function useLag() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, code }),
     });
-    if (!res.ok) throw new Error("otp verify failed");
+    if (!res.ok) {
+      let detail = "OTP verification failed";
+      try {
+        const body = await res.json();
+        if (body?.detail) detail = body.detail;
+      } catch {}
+      throw new Error(detail);
+    }
     return res.json();
   }, []);
 

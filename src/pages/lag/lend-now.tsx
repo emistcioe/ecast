@@ -81,7 +81,7 @@ export default function LagLendNowPage() {
       .map((m) => ({ material: m, quantity: cart[m.id] }));
   }, [materials, cart]);
 
-  const handleRequestOtp = async () => {
+  const handleRequestOtp = async (resend = false) => {
     setError(null);
     if (!email.endsWith("@tcioe.edu.np")) {
       setError("Email must end with @tcioe.edu.np");
@@ -90,9 +90,10 @@ export default function LagLendNowPage() {
     setLoading(true);
     try {
       await requestOtp(email);
-      setStep("otp");
-    } catch (e) {
-      setError("Failed to send OTP");
+      setOtp("");
+      if (!resend) setStep("otp");
+    } catch (e: any) {
+      setError(e?.message || "Failed to send OTP");
     } finally {
       setLoading(false);
     }
@@ -143,13 +144,17 @@ export default function LagLendNowPage() {
       await submitRequest(newToken);
     } catch (e: any) {
       const msg = e?.message || "Invalid OTP";
-      setError(msg);
       if (msg.includes("LAG token") || msg.includes("token")) {
         localStorage.removeItem("lag_token");
         localStorage.removeItem("lag_email");
         localStorage.removeItem("lag_token_at");
         setToken(null);
+        setError("Session expired. Please verify again.");
         setStep("email");
+      } else if (msg.toLowerCase().includes("expired") || msg.toLowerCase().includes("not found")) {
+        setError("Code expired. Please resend a new one.");
+      } else {
+        setError(msg);
       }
     } finally {
       setLoading(false);
@@ -366,6 +371,13 @@ export default function LagLendNowPage() {
                     Change email
                   </button>
                 </div>
+                <button
+                  onClick={() => handleRequestOtp(true)}
+                  disabled={loading}
+                  className="mt-3 w-full text-center text-xs text-gray-400 hover:text-white transition disabled:opacity-50"
+                >
+                  Resend code
+                </button>
               </div>
             </div>
           )}
