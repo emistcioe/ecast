@@ -16,11 +16,11 @@ type Material = {
   available_quantity?: number;
 };
 
-type Step = "email" | "otp" | "cart" | "done";
+type Step = "cart" | "email" | "otp" | "done";
 
 export default function LagLendNowPage() {
   const { listMaterials, requestOtp, verifyOtp, createRequest } = useLag();
-  const [step, setStep] = useState<Step>("email");
+  const [step, setStep] = useState<Step>("cart");
   const [email, setEmail] = useState("");
   const [otp, setOtp] = useState("");
   const [token, setToken] = useState<string | null>(null);
@@ -52,12 +52,10 @@ export default function LagLendNowPage() {
       }
       setToken(savedToken);
       setEmail(savedEmail);
-      setStep("cart");
     }
   }, []);
 
   useEffect(() => {
-    if (step !== "cart") return;
     let mounted = true;
     listMaterials()
       .then((data) => {
@@ -71,7 +69,7 @@ export default function LagLendNowPage() {
     return () => {
       mounted = false;
     };
-  }, [step, listMaterials]);
+  }, [listMaterials]);
 
   const cartItems = useMemo(() => {
     return materials
@@ -96,6 +94,31 @@ export default function LagLendNowPage() {
     }
   };
 
+  const submitRequest = async (authToken: string) => {
+    const payload = {
+      requester_name: requesterName.trim(),
+      phone_number: phoneNumber.trim(),
+      roll_number: rollNumber.trim(),
+      requested_from: requestedFrom,
+      requested_to: requestedTo,
+      items: cartItems.map((c) => ({
+        material_id: c.material.id,
+        quantity: c.quantity,
+      })),
+      notes: notes.trim(),
+    };
+    const data = await createRequest(authToken, payload);
+    setSuccess(data);
+    setCart({});
+    setNotes("");
+    setRequesterName("");
+    setPhoneNumber("");
+    setRollNumber("");
+    setRequestedFrom("");
+    setRequestedTo("");
+    setStep("done");
+  };
+
   const handleVerifyOtp = async () => {
     setError(null);
     if (!otp.trim()) {
@@ -105,15 +128,25 @@ export default function LagLendNowPage() {
     setLoading(true);
     try {
       const data = await verifyOtp(email, otp.trim());
-      setToken(data.token);
+      const newToken = data.token;
+      setToken(newToken);
       if (typeof window !== "undefined") {
-        localStorage.setItem("lag_token", data.token);
+        localStorage.setItem("lag_token", newToken);
         localStorage.setItem("lag_email", email);
         localStorage.setItem("lag_token_at", String(Date.now()));
       }
-      setStep("cart");
-    } catch (e) {
-      setError("Invalid OTP");
+      // Auto-submit the request after verification
+      await submitRequest(newToken);
+    } catch (e: any) {
+      const msg = e?.message || "Invalid OTP";
+      setError(msg);
+      if (msg.includes("LAG token") || msg.includes("token")) {
+        localStorage.removeItem("lag_token");
+        localStorage.removeItem("lag_email");
+        localStorage.removeItem("lag_token_at");
+        setToken(null);
+        setStep("email");
+      }
     } finally {
       setLoading(false);
     }
@@ -132,80 +165,67 @@ export default function LagLendNowPage() {
     });
   };
 
-  const handleSubmitRequest = async () => {
+  const validateForm = (): boolean => {
     setError(null);
-    if (!token) {
-      setError("OTP verification required");
-      return;
+    if (cartItems.length === 0) {
+      setError("Please add items to cart");
+      return false;
     }
     if (!requesterName.trim()) {
       setError("Name is required");
-      return;
+      return false;
     }
     if (!phoneNumber.trim()) {
       setError("Phone number is required");
-      return;
+      return false;
     }
     if (!rollNumber.trim()) {
       setError("Roll number is required");
-      return;
+      return false;
     }
     if (!requestedFrom || !requestedTo) {
       setError("Requested duration is required");
-      return;
+      return false;
     }
     const fromDate = new Date(requestedFrom);
     const toDate = new Date(requestedTo);
     if (Number.isNaN(fromDate.getTime()) || Number.isNaN(toDate.getTime())) {
       setError("Invalid requested duration");
-      return;
+      return false;
     }
     if (fromDate >= toDate) {
-      setError("End time must be after start time");
-      return;
+      setError("End date must be after start date");
+      return false;
     }
-    if (cartItems.length === 0) {
-      setError("Please add items to cart");
-      return;
-    }
-    setLoading(true);
-    try {
-      const payload = {
-        requester_name: requesterName.trim(),
-        phone_number: phoneNumber.trim(),
-        roll_number: rollNumber.trim(),
-        requested_from: requestedFrom,
-        requested_to: requestedTo,
-        items: cartItems.map((c) => ({
-          material_id: c.material.id,
-          quantity: c.quantity,
-        })),
-        notes: notes.trim(),
-      };
-      const data = await createRequest(token, payload);
-      setSuccess(data);
-      setCart({});
-      setNotes("");
-      setRequesterName("");
-      setPhoneNumber("");
-      setRollNumber("");
-      setRequestedFrom("");
-      setRequestedTo("");
-      setStep("done");
-    } catch (e: any) {
-      const msg = e?.message || "Failed to submit request";
-      setError(msg);
-      // If token expired/invalid, clear session and go back to email
-      if (msg.includes("LAG token") || msg.includes("token")) {
-        localStorage.removeItem("lag_token");
-        localStorage.removeItem("lag_email");
-        localStorage.removeItem("lag_token_at");
-        setToken(null);
-        setStep("email");
+    return true;
+  };
+
+  const handleSubmitRequest = async () => {
+    if (!validateForm()) return;
+
+    // If already verified, submit directly
+    if (token) {
+      setLoading(true);
+      try {
+        await submitRequest(token);
+      } catch (e: any) {
+        const msg = e?.message || "Failed to submit request";
+        setError(msg);
+        if (msg.includes("LAG token") || msg.includes("token")) {
+          localStorage.removeItem("lag_token");
+          localStorage.removeItem("lag_email");
+          localStorage.removeItem("lag_token_at");
+          setToken(null);
+          setStep("email");
+        }
+      } finally {
+        setLoading(false);
       }
-    } finally {
-      setLoading(false);
+      return;
     }
+
+    // Not verified yet - go to email step
+    setStep("email");
   };
 
   return (
@@ -221,12 +241,12 @@ export default function LagLendNowPage() {
             <div>
               <h1 className="text-3xl md:text-4xl font-bold tracking-tight">Lend Now</h1>
               <p className="text-gray-400 mt-1 text-sm">
-                Verify your email and request materials.
+                Browse materials, fill details, then verify to submit.
               </p>
             </div>
             <div className="flex items-center gap-2">
-              {["Email", "OTP", "Cart", "Done"].map((label, i) => {
-                const stepIndex = step === "email" ? 0 : step === "otp" ? 1 : step === "cart" ? 2 : 3;
+              {["Cart", "Email", "OTP", "Done"].map((label, i) => {
+                const stepIndex = step === "cart" ? 0 : step === "email" ? 1 : step === "otp" ? 2 : 3;
                 const isActive = i === stepIndex;
                 const isDone = i < stepIndex;
                 return (
@@ -257,7 +277,7 @@ export default function LagLendNowPage() {
             </div>
           )}
 
-          {/* Step 1: Email */}
+          {/* Step 2: Email */}
           {step === "email" && (
             <div className="mt-10 max-w-lg mx-auto">
               <div className="bg-gray-900/80 border border-gray-800 rounded-2xl p-8">
@@ -285,14 +305,22 @@ export default function LagLendNowPage() {
                 >
                   {loading ? "Sending..." : "Send verification code"}
                 </button>
-                <p className="text-xs text-gray-500 mt-4 text-center">
-                  Only @tcioe.edu.np emails are accepted for verification.
-                </p>
+                <div className="mt-4 flex items-center justify-between">
+                  <p className="text-xs text-gray-500">
+                    Only @tcioe.edu.np emails are accepted.
+                  </p>
+                  <button
+                    onClick={() => setStep("cart")}
+                    className="text-xs text-gray-400 hover:text-white transition"
+                  >
+                    Back to cart
+                  </button>
+                </div>
               </div>
             </div>
           )}
 
-          {/* Step 2: OTP */}
+          {/* Step 3: OTP */}
           {step === "otp" && (
             <div className="mt-10 max-w-lg mx-auto">
               <div className="bg-gray-900/80 border border-gray-800 rounded-2xl p-8">
@@ -320,7 +348,7 @@ export default function LagLendNowPage() {
                     disabled={loading}
                     className="flex-1 bg-white text-gray-950 font-semibold px-4 py-3 rounded-xl hover:bg-gray-100 transition disabled:opacity-50"
                   >
-                    {loading ? "Verifying..." : "Verify"}
+                    {loading ? "Verifying..." : "Verify & submit"}
                   </button>
                   <button
                     onClick={() => setStep("email")}
@@ -333,7 +361,7 @@ export default function LagLendNowPage() {
             </div>
           )}
 
-          {/* Step 3: Cart */}
+          {/* Step 1: Cart */}
           {step === "cart" && (
             <div className="mt-8 grid lg:grid-cols-5 gap-6">
               {/* Materials - wider */}
@@ -520,8 +548,13 @@ export default function LagLendNowPage() {
                     disabled={loading || cartItems.length === 0}
                     className="mt-5 w-full bg-white text-gray-950 font-semibold px-4 py-3 rounded-xl hover:bg-gray-100 transition disabled:opacity-40 disabled:cursor-not-allowed"
                   >
-                    {loading ? "Submitting..." : "Submit request"}
+                    {loading ? "Submitting..." : token ? "Submit request" : "Proceed to verify"}
                   </button>
+                  {token && (
+                    <p className="text-xs text-gray-500 mt-2 text-center">
+                      Verified as {email}
+                    </p>
+                  )}
                 </div>
               </div>
             </div>
