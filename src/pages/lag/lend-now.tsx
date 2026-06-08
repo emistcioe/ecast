@@ -16,7 +16,7 @@ type Material = {
   available_quantity?: number;
 };
 
-type Step = "cart" | "email" | "otp" | "done";
+type Step = "cart" | "details" | "email" | "otp" | "done";
 
 export default function LagLendNowPage() {
   const { listMaterials, requestOtp, verifyOtp, createRequest } = useLag();
@@ -165,12 +165,17 @@ export default function LagLendNowPage() {
     });
   };
 
-  const validateForm = (): boolean => {
+  const handleContinueToDetails = () => {
     setError(null);
     if (cartItems.length === 0) {
       setError("Please add items to cart");
-      return false;
+      return;
     }
+    setStep("details");
+  };
+
+  const validateDetails = (): boolean => {
+    setError(null);
     if (!requesterName.trim()) {
       setError("Name is required");
       return false;
@@ -200,8 +205,8 @@ export default function LagLendNowPage() {
     return true;
   };
 
-  const handleSubmitRequest = async () => {
-    if (!validateForm()) return;
+  const handleSubmitDetails = async () => {
+    if (!validateDetails()) return;
 
     // If already verified, submit directly
     if (token) {
@@ -241,12 +246,12 @@ export default function LagLendNowPage() {
             <div>
               <h1 className="text-3xl md:text-4xl font-bold tracking-tight">Lend Now</h1>
               <p className="text-gray-400 mt-1 text-sm">
-                Browse materials, fill details, then verify to submit.
+                Pick materials, fill your details, then verify to submit.
               </p>
             </div>
             <div className="flex items-center gap-2">
-              {["Cart", "Email", "OTP", "Done"].map((label, i) => {
-                const stepIndex = step === "cart" ? 0 : step === "email" ? 1 : step === "otp" ? 2 : 3;
+              {["Cart", "Details", "Email", "OTP", "Done"].map((label, i) => {
+                const stepIndex = step === "cart" ? 0 : step === "details" ? 1 : step === "email" ? 2 : step === "otp" ? 3 : 4;
                 const isActive = i === stepIndex;
                 const isDone = i < stepIndex;
                 return (
@@ -310,10 +315,10 @@ export default function LagLendNowPage() {
                     Only @tcioe.edu.np emails are accepted.
                   </p>
                   <button
-                    onClick={() => setStep("cart")}
+                    onClick={() => setStep("details")}
                     className="text-xs text-gray-400 hover:text-white transition"
                   >
-                    Back to cart
+                    Back to details
                   </button>
                 </div>
               </div>
@@ -448,11 +453,10 @@ export default function LagLendNowPage() {
                 </div>
               </div>
 
-              {/* Sidebar - cart + form */}
+              {/* Sidebar - cart summary */}
               <div className="lg:col-span-2">
                 <div className="bg-gray-900/80 border border-gray-800 rounded-2xl p-5 lg:sticky lg:top-28">
-                  {/* Cart summary */}
-                  <h2 className="text-lg font-semibold">Your request</h2>
+                  <h2 className="text-lg font-semibold">Your cart</h2>
                   <div className="mt-3 space-y-2">
                     {cartItems.length === 0 ? (
                       <div className="text-gray-500 text-sm py-2">
@@ -477,84 +481,121 @@ export default function LagLendNowPage() {
                     )}
                   </div>
 
-                  {/* Divider */}
-                  <div className="h-px bg-gray-800 my-4" />
+                  <button
+                    onClick={handleContinueToDetails}
+                    disabled={cartItems.length === 0}
+                    className="mt-5 w-full bg-white text-gray-950 font-semibold px-4 py-3 rounded-xl hover:bg-gray-100 transition disabled:opacity-40 disabled:cursor-not-allowed"
+                  >
+                    Continue
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
 
-                  {/* Form fields */}
-                  <div className="space-y-3">
+          {/* Step 2: Details */}
+          {step === "details" && (
+            <div className="mt-10 max-w-lg mx-auto">
+              <div className="bg-gray-900/80 border border-gray-800 rounded-2xl p-8">
+                <div className="w-12 h-12 bg-gray-800 rounded-xl flex items-center justify-center mb-5">
+                  <svg className="w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" /></svg>
+                </div>
+                <h2 className="text-xl font-semibold">Your details</h2>
+                <p className="text-gray-400 text-sm mt-1.5">
+                  Fill in your information for the loan request.
+                </p>
+
+                {/* Cart summary */}
+                <div className="mt-5 bg-gray-950/60 rounded-xl p-3 space-y-1.5">
+                  {cartItems.map((c) => (
+                    <div key={c.material.id} className="flex items-center justify-between text-sm">
+                      <span className="text-gray-300">{c.material.name}</span>
+                      <span className="text-white font-semibold tabular-nums">x{c.quantity}</span>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="mt-5 space-y-3">
+                  <div>
+                    <label className="text-xs font-medium text-gray-400 uppercase tracking-wider">Full name</label>
+                    <input
+                      value={requesterName}
+                      onChange={(e) => setRequesterName(e.target.value)}
+                      className="mt-1 w-full bg-gray-950 border border-gray-800 rounded-lg px-3 py-2.5 text-sm text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-teal-500/40 transition"
+                      placeholder="Abhishek Panthee"
+                    />
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className="text-xs font-medium text-gray-400 uppercase tracking-wider">Full name</label>
+                      <label className="text-xs font-medium text-gray-400 uppercase tracking-wider">Phone</label>
                       <input
-                        value={requesterName}
-                        onChange={(e) => setRequesterName(e.target.value)}
+                        value={phoneNumber}
+                        onChange={(e) => setPhoneNumber(e.target.value)}
                         className="mt-1 w-full bg-gray-950 border border-gray-800 rounded-lg px-3 py-2.5 text-sm text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-teal-500/40 transition"
-                        placeholder="Abhishek Panthee"
+                        placeholder="98XXXXXXXX"
                       />
                     </div>
-                    <div className="grid grid-cols-2 gap-3">
-                      <div>
-                        <label className="text-xs font-medium text-gray-400 uppercase tracking-wider">Phone</label>
-                        <input
-                          value={phoneNumber}
-                          onChange={(e) => setPhoneNumber(e.target.value)}
-                          className="mt-1 w-full bg-gray-950 border border-gray-800 rounded-lg px-3 py-2.5 text-sm text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-teal-500/40 transition"
-                          placeholder="98XXXXXXXX"
-                        />
-                      </div>
-                      <div>
-                        <label className="text-xs font-medium text-gray-400 uppercase tracking-wider">Roll no.</label>
-                        <input
-                          value={rollNumber}
-                          onChange={(e) => setRollNumber(e.target.value)}
-                          className="mt-1 w-full bg-gray-950 border border-gray-800 rounded-lg px-3 py-2.5 text-sm text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-teal-500/40 transition"
-                          placeholder="THA080BCT"
-                        />
-                      </div>
-                    </div>
-                    <div className="grid grid-cols-2 gap-3">
-                      <div>
-                        <label className="text-xs font-medium text-gray-400 uppercase tracking-wider">From</label>
-                        <input
-                          type="date"
-                          value={requestedFrom}
-                          onChange={(e) => setRequestedFrom(e.target.value)}
-                          className="mt-1 w-full bg-gray-950 border border-gray-800 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-teal-500/40 [color-scheme:dark] transition"
-                        />
-                      </div>
-                      <div>
-                        <label className="text-xs font-medium text-gray-400 uppercase tracking-wider">To</label>
-                        <input
-                          type="date"
-                          value={requestedTo}
-                          onChange={(e) => setRequestedTo(e.target.value)}
-                          className="mt-1 w-full bg-gray-950 border border-gray-800 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-teal-500/40 [color-scheme:dark] transition"
-                        />
-                      </div>
-                    </div>
                     <div>
-                      <label className="text-xs font-medium text-gray-400 uppercase tracking-wider">Notes <span className="normal-case text-gray-600">(optional)</span></label>
-                      <textarea
-                        value={notes}
-                        onChange={(e) => setNotes(e.target.value)}
-                        className="mt-1 w-full bg-gray-950 border border-gray-800 rounded-lg px-3 py-2.5 text-sm text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-teal-500/40 transition resize-none"
-                        rows={3}
-                        placeholder="What will you use these for?"
+                      <label className="text-xs font-medium text-gray-400 uppercase tracking-wider">Roll no.</label>
+                      <input
+                        value={rollNumber}
+                        onChange={(e) => setRollNumber(e.target.value)}
+                        className="mt-1 w-full bg-gray-950 border border-gray-800 rounded-lg px-3 py-2.5 text-sm text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-teal-500/40 transition"
+                        placeholder="THA080BCT"
                       />
                     </div>
                   </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="text-xs font-medium text-gray-400 uppercase tracking-wider">From</label>
+                      <input
+                        type="date"
+                        value={requestedFrom}
+                        onChange={(e) => setRequestedFrom(e.target.value)}
+                        className="mt-1 w-full bg-gray-950 border border-gray-800 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-teal-500/40 [color-scheme:dark] transition"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-xs font-medium text-gray-400 uppercase tracking-wider">To</label>
+                      <input
+                        type="date"
+                        value={requestedTo}
+                        onChange={(e) => setRequestedTo(e.target.value)}
+                        className="mt-1 w-full bg-gray-950 border border-gray-800 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-teal-500/40 [color-scheme:dark] transition"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="text-xs font-medium text-gray-400 uppercase tracking-wider">Notes <span className="normal-case text-gray-600">(optional)</span></label>
+                    <textarea
+                      value={notes}
+                      onChange={(e) => setNotes(e.target.value)}
+                      className="mt-1 w-full bg-gray-950 border border-gray-800 rounded-lg px-3 py-2.5 text-sm text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-teal-500/40 transition resize-none"
+                      rows={3}
+                      placeholder="What will you use these for?"
+                    />
+                  </div>
+                </div>
 
+                <button
+                  onClick={handleSubmitDetails}
+                  disabled={loading}
+                  className="mt-5 w-full bg-white text-gray-950 font-semibold px-4 py-3 rounded-xl hover:bg-gray-100 transition disabled:opacity-50"
+                >
+                  {loading ? "Submitting..." : token ? "Submit request" : "Proceed to verify"}
+                </button>
+                {token && (
+                  <p className="text-xs text-gray-500 mt-2 text-center">
+                    Verified as {email}
+                  </p>
+                )}
+                <div className="mt-3 text-center">
                   <button
-                    onClick={handleSubmitRequest}
-                    disabled={loading || cartItems.length === 0}
-                    className="mt-5 w-full bg-white text-gray-950 font-semibold px-4 py-3 rounded-xl hover:bg-gray-100 transition disabled:opacity-40 disabled:cursor-not-allowed"
+                    onClick={() => setStep("cart")}
+                    className="text-xs text-gray-400 hover:text-white transition"
                   >
-                    {loading ? "Submitting..." : token ? "Submit request" : "Proceed to verify"}
+                    Back to cart
                   </button>
-                  {token && (
-                    <p className="text-xs text-gray-500 mt-2 text-center">
-                      Verified as {email}
-                    </p>
-                  )}
                 </div>
               </div>
             </div>
