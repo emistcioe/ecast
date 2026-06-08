@@ -349,7 +349,8 @@ export default function LagLendNowPage() {
                 )}
                 <div className="grid sm:grid-cols-2 gap-3">
                   {materials.map((m) => {
-                    const available = m.available_quantity ?? 0;
+                    const canLend = m.available_quantity ?? 0;
+                    const stock = (m.available ?? m.total_quantity) - (m.active_loaned ?? 0);
                     const qty = cart[m.id] || 0;
                     const inCart = qty > 0;
                     return (
@@ -375,9 +376,9 @@ export default function LagLendNowPage() {
                           <div className="flex items-start justify-between gap-2">
                             <h3 className="font-medium text-sm leading-tight">{m.name}</h3>
                             <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded-md shrink-0 ${
-                              available > 0 ? "bg-teal-600/15 text-teal-300" : "bg-red-500/10 text-red-400"
+                              stock > 0 ? "bg-teal-600/15 text-teal-300" : "bg-red-500/10 text-red-400"
                             }`}>
-                              {available > 0 ? `${available} left` : "Unavailable"}
+                              {stock > 0 ? `${stock} in stock` : "Out of stock"}
                             </span>
                           </div>
                           {m.description && m.description !== "No description" && (
@@ -397,15 +398,20 @@ export default function LagLendNowPage() {
                               </div>
                               <button
                                 onClick={() => handleAdjustQty(m.id, 1)}
-                                disabled={available === 0 || qty >= available}
+                                disabled={canLend === 0 || qty >= canLend}
                                 className="w-7 h-7 rounded-lg bg-gray-800 hover:bg-gray-700 flex items-center justify-center text-sm font-medium transition disabled:opacity-30"
                               >
                                 +
                               </button>
                             </div>
-                            {inCart && (
-                              <span className="text-[10px] text-teal-400 font-medium">In cart</span>
-                            )}
+                            <div className="flex items-center gap-2">
+                              {canLend < stock && canLend > 0 && (
+                                <span className="text-[10px] text-gray-500">max {canLend}</span>
+                              )}
+                              {inCart && (
+                                <span className="text-[10px] text-teal-400 font-medium">In cart</span>
+                              )}
+                            </div>
                           </div>
                         </div>
                       </div>
