@@ -813,15 +813,15 @@ export default function AdminDashboard() {
         >
           {activeSection === "overview" && (
             <div className="max-w-7xl mx-auto space-y-4">
-              <h1 className="text-3xl font-bold mb-4 bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 bg-clip-text text-transparent">
+              <h1 className="text-3xl font-bold mb-4 text-white">
                 Dashboard Overview
               </h1>
 
               {/* Enrollment Status Control */}
-              <div className="mb-4 bg-gradient-to-br from-indigo-900/40 to-indigo-600/20 p-6 rounded-lg border border-indigo-500/30">
+              <div className="mb-4 bg-gray-900/60 p-6 rounded-lg border border-gray-700/50">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <UserPlusIcon className="w-8 h-8 text-indigo-400" />
+                    <UserPlusIcon className="w-8 h-8 text-gray-300" />
                     <div>
                       <h3 className="text-lg font-semibold text-white">
                         Enrollment Status
@@ -888,10 +888,10 @@ export default function AdminDashboard() {
               </div>
 
               {/* Ambassador Enrollment Status Control */}
-              <div className="mb-4 bg-gradient-to-br from-fuchsia-900/40 to-fuchsia-600/20 p-6 rounded-lg border border-fuchsia-500/30">
+              <div className="mb-4 bg-gray-900/60 p-6 rounded-lg border border-gray-700/50">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <UserPlusIcon className="w-8 h-8 text-fuchsia-400" />
+                    <UserPlusIcon className="w-8 h-8 text-gray-300" />
                     <div>
                       <h3 className="text-lg font-semibold text-white">
                         Ambassador Enrollment Status
@@ -960,61 +960,61 @@ export default function AdminDashboard() {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-3">
                 <div
                   onClick={() => setActiveSection("notices")}
-                  className="bg-gradient-to-br from-purple-900/30 to-purple-600/20 p-3 rounded-lg border border-purple-500/20 hover:border-purple-500/40 transition cursor-pointer group"
+                  className="bg-gray-900/50 p-3 rounded-lg border border-gray-700/40 hover:border-gray-600 transition cursor-pointer group"
                 >
-                  <BellIcon className="w-7 h-7 mb-1.5 text-purple-400 group-hover:scale-110 transition-transform" />
+                  <BellIcon className="w-7 h-7 mb-1.5 text-gray-400 group-hover:scale-110 transition-transform" />
                   <h3 className="text-xs font-semibold mb-0.5">
                     Pending Notices
                   </h3>
-                  <p className="text-lg font-bold text-purple-300">
+                  <p className="text-lg font-bold text-white">
                     {pendingNotices.length}
                   </p>
                 </div>
                 <div
                   onClick={() => setActiveSection("blogs")}
-                  className="bg-gradient-to-br from-pink-900/30 to-pink-600/20 p-3 rounded-lg border border-pink-500/20 hover:border-pink-500/40 transition cursor-pointer group"
+                  className="bg-gray-900/50 p-3 rounded-lg border border-gray-700/40 hover:border-gray-600 transition cursor-pointer group"
                 >
-                  <DocumentTextIcon className="w-7 h-7 mb-1.5 text-pink-400 group-hover:scale-110 transition-transform" />
+                  <DocumentTextIcon className="w-7 h-7 mb-1.5 text-gray-400 group-hover:scale-110 transition-transform" />
                   <h3 className="text-xs font-semibold mb-0.5">
                     Pending Blogs
                   </h3>
-                  <p className="text-lg font-bold text-pink-300">
+                  <p className="text-lg font-bold text-white">
                     {pendingBlogs.length}
                   </p>
                 </div>
                 <div
                   onClick={() => setActiveSection("events")}
-                  className="bg-gradient-to-br from-blue-900/30 to-blue-600/20 p-3 rounded-lg border border-blue-500/20 hover:border-blue-500/40 transition cursor-pointer group"
+                  className="bg-gray-900/50 p-3 rounded-lg border border-gray-700/40 hover:border-gray-600 transition cursor-pointer group"
                 >
-                  <CalendarIcon className="w-7 h-7 mb-1.5 text-blue-400 group-hover:scale-110 transition-transform" />
+                  <CalendarIcon className="w-7 h-7 mb-1.5 text-gray-400 group-hover:scale-110 transition-transform" />
                   <h3 className="text-xs font-semibold mb-0.5">
                     Pending Events
                   </h3>
-                  <p className="text-lg font-bold text-blue-300">
+                  <p className="text-lg font-bold text-white">
                     {pendingEvents.length}
                   </p>
                 </div>
                 <div
                   onClick={() => setActiveSection("projects")}
-                  className="bg-gradient-to-br from-green-900/30 to-green-600/20 p-3 rounded-lg border border-green-500/20 hover:border-green-500/40 transition cursor-pointer group"
+                  className="bg-gray-900/50 p-3 rounded-lg border border-gray-700/40 hover:border-gray-600 transition cursor-pointer group"
                 >
-                  <FolderIcon className="w-7 h-7 mb-1.5 text-green-400 group-hover:scale-110 transition-transform" />
+                  <FolderIcon className="w-7 h-7 mb-1.5 text-gray-400 group-hover:scale-110 transition-transform" />
                   <h3 className="text-xs font-semibold mb-0.5">
                     Pending Projects
                   </h3>
-                  <p className="text-lg font-bold text-green-300">
+                  <p className="text-lg font-bold text-white">
                     {pendingProjects.length}
                   </p>
                 </div>
                 <div
                   onClick={() => setActiveSection("research")}
-                  className="bg-gradient-to-br from-amber-900/30 to-amber-600/20 p-3 rounded-lg border border-amber-500/20 hover:border-amber-500/40 transition cursor-pointer group"
+                  className="bg-gray-900/50 p-3 rounded-lg border border-gray-700/40 hover:border-gray-600 transition cursor-pointer group"
                 >
-                  <ChartBarIcon className="w-7 h-7 mb-1.5 text-amber-400 group-hover:scale-110 transition-transform" />
+                  <ChartBarIcon className="w-7 h-7 mb-1.5 text-gray-400 group-hover:scale-110 transition-transform" />
                   <h3 className="text-xs font-semibold mb-0.5">
                     Pending Research
                   </h3>
-                  <p className="text-lg font-bold text-amber-300">
+                  <p className="text-lg font-bold text-white">
                     {pendingResearch.length}
                   </p>
                 </div>
@@ -1023,49 +1023,49 @@ export default function AdminDashboard() {
               <div className="grid md:grid-cols-3 lg:grid-cols-2 gap-3">
                 <div className="bg-gray-900/50 backdrop-blur p-3 rounded-lg border border-gray-800">
                   <h3 className="text-sm font-semibold mb-2 flex items-center gap-2">
-                    <ClipboardDocumentCheckIcon className="w-4 h-4 text-yellow-400" />
+                    <ClipboardDocumentCheckIcon className="w-4 h-4 text-gray-400" />
                     Quick Actions
                   </h3>
                   <div className="grid grid-cols-2 gap-1.5">
                     <button
                       onClick={() => setActiveSection("notices")}
-                      className="bg-purple-600/20 hover:bg-purple-600/30 border border-purple-500/30 p-1.5 rounded-lg transition flex items-center gap-1 text-xs font-medium"
+                      className="bg-white/5 hover:bg-white/10 border border-gray-700 p-1.5 rounded-lg transition flex items-center gap-1 text-xs font-medium"
                     >
                       <PlusCircleIcon className="w-3 h-3" /> Notice
                     </button>
                     <button
                       onClick={() => setActiveSection("blogs")}
-                      className="bg-pink-600/20 hover:bg-pink-600/30 border border-pink-500/30 p-1.5 rounded-lg transition flex items-center gap-1 text-xs font-medium"
+                      className="bg-white/5 hover:bg-white/10 border border-gray-700 p-1.5 rounded-lg transition flex items-center gap-1 text-xs font-medium"
                     >
                       <PlusCircleIcon className="w-3 h-3" /> Blog
                     </button>
                     <button
                       onClick={() => setActiveSection("projects")}
-                      className="bg-green-600/20 hover:bg-green-600/30 border border-green-500/30 p-1.5 rounded-lg transition flex items-center gap-1 text-xs font-medium"
+                      className="bg-white/5 hover:bg-white/10 border border-gray-700 p-1.5 rounded-lg transition flex items-center gap-1 text-xs font-medium"
                     >
                       <PlusCircleIcon className="w-3 h-3" /> Project
                     </button>
                     <button
                       onClick={() => setActiveSection("events")}
-                      className="bg-blue-600/20 hover:bg-blue-600/30 border border-blue-500/30 p-1.5 rounded-lg transition flex items-center gap-1 text-xs font-medium"
+                      className="bg-white/5 hover:bg-white/10 border border-gray-700 p-1.5 rounded-lg transition flex items-center gap-1 text-xs font-medium"
                     >
                       <PlusCircleIcon className="w-3 h-3" /> Event
                     </button>
                     <button
                       onClick={() => setActiveSection("gallery")}
-                      className="bg-cyan-600/20 hover:bg-cyan-600/30 border border-cyan-500/30 p-1.5 rounded-lg transition flex items-center gap-1 text-xs font-medium"
+                      className="bg-white/5 hover:bg-white/10 border border-gray-700 p-1.5 rounded-lg transition flex items-center gap-1 text-xs font-medium"
                     >
                       <PlusCircleIcon className="w-3 h-3" /> Gallery
                     </button>
                     <button
                       onClick={() => setActiveSection("research")}
-                      className="bg-amber-600/20 hover:bg-amber-600/30 border border-amber-500/30 p-1.5 rounded-lg transition flex items-center gap-1 text-xs font-medium"
+                      className="bg-white/5 hover:bg-white/10 border border-gray-700 p-1.5 rounded-lg transition flex items-center gap-1 text-xs font-medium"
                     >
                       <PlusCircleIcon className="w-3 h-3" /> Research
                     </button>
                     <button
                       onClick={() => setActiveSection("tasks")}
-                      className="bg-yellow-600/20 hover:bg-yellow-600/30 border border-yellow-500/30 p-1.5 rounded-lg transition flex items-center gap-1 text-xs font-medium col-span-2"
+                      className="bg-white/5 hover:bg-white/10 border border-gray-700 p-1.5 rounded-lg transition flex items-center gap-1 text-xs font-medium col-span-2"
                     >
                       <PlusCircleIcon className="w-3 h-3" /> Assign Task
                     </button>
@@ -1073,37 +1073,37 @@ export default function AdminDashboard() {
                 </div>
                 <div className="bg-gray-900/50 backdrop-blur p-3 rounded-lg border border-gray-800">
                   <h3 className="text-sm font-semibold mb-2 flex items-center gap-2">
-                    <ChartBarIcon className="w-4 h-4 text-blue-400" />
+                    <ChartBarIcon className="w-4 h-4 text-gray-400" />
                     Content Stats
                   </h3>
                   <div className="space-y-1">
                     <div className="flex justify-between text-xs">
                       <span className="text-gray-400">Blogs:</span>
-                      <span className="font-semibold text-pink-400">
+                      <span className="font-semibold text-white">
                         {pendingBlogs.length}
                       </span>
                     </div>
                     <div className="flex justify-between text-xs">
                       <span className="text-gray-400">Notices:</span>
-                      <span className="font-semibold text-purple-400">
+                      <span className="font-semibold text-white">
                         {pendingNotices.length}
                       </span>
                     </div>
                     <div className="flex justify-between text-xs">
                       <span className="text-gray-400">Events:</span>
-                      <span className="font-semibold text-blue-400">
+                      <span className="font-semibold text-white">
                         {pendingEvents.length}
                       </span>
                     </div>
                     <div className="flex justify-between text-xs">
                       <span className="text-gray-400">Projects:</span>
-                      <span className="font-semibold text-green-400">
+                      <span className="font-semibold text-white">
                         {pendingProjects.length}
                       </span>
                     </div>
                     <div className="flex justify-between text-xs">
                       <span className="text-gray-400">Research:</span>
-                      <span className="font-semibold text-amber-400">
+                      <span className="font-semibold text-white">
                         {pendingResearch.length}
                       </span>
                     </div>
@@ -1121,11 +1121,11 @@ export default function AdminDashboard() {
                 <div className="space-y-4">
                   {/* Analytics Stats Cards */}
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <div className="bg-gradient-to-br from-blue-900/30 to-blue-600/20 p-4 rounded-lg border border-blue-500/20">
+                    <div className="bg-gray-900/50 p-4 rounded-lg border border-gray-700/40">
                       <div className="text-sm text-gray-400 mb-1">
                         Total Visitors
                       </div>
-                      <div className="text-2xl font-bold text-blue-300">
+                      <div className="text-2xl font-bold text-white">
                         {analyticsData.summary?.visitors?.value?.toLocaleString() ||
                           0}
                       </div>
@@ -1138,11 +1138,11 @@ export default function AdminDashboard() {
                         </div>
                       )}
                     </div>
-                    <div className="bg-gradient-to-br from-purple-900/30 to-purple-600/20 p-4 rounded-lg border border-purple-500/20">
+                    <div className="bg-gray-900/50 p-4 rounded-lg border border-gray-700/40">
                       <div className="text-sm text-gray-400 mb-1">
                         Page Views
                       </div>
-                      <div className="text-2xl font-bold text-purple-300">
+                      <div className="text-2xl font-bold text-white">
                         {analyticsData.summary?.pageviews?.value?.toLocaleString() ||
                           0}
                       </div>
@@ -1157,11 +1157,11 @@ export default function AdminDashboard() {
                         </div>
                       )}
                     </div>
-                    <div className="bg-gradient-to-br from-green-900/30 to-green-600/20 p-4 rounded-lg border border-green-500/20">
+                    <div className="bg-gray-900/50 p-4 rounded-lg border border-gray-700/40">
                       <div className="text-sm text-gray-400 mb-1">
                         Total Visits
                       </div>
-                      <div className="text-2xl font-bold text-green-300">
+                      <div className="text-2xl font-bold text-white">
                         {analyticsData.summary?.visits?.value?.toLocaleString() ||
                           0}
                       </div>
@@ -1172,11 +1172,11 @@ export default function AdminDashboard() {
                         </div>
                       )}
                     </div>
-                    <div className="bg-gradient-to-br from-orange-900/30 to-orange-600/20 p-4 rounded-lg border border-orange-500/20">
+                    <div className="bg-gray-900/50 p-4 rounded-lg border border-gray-700/40">
                       <div className="text-sm text-gray-400 mb-1">
                         Bounce Rate
                       </div>
-                      <div className="text-2xl font-bold text-orange-300">
+                      <div className="text-2xl font-bold text-white">
                         {analyticsData.summary?.visits?.value
                           ? Math.round(
                               (analyticsData.summary.bounces.value /
