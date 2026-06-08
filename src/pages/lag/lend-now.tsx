@@ -313,7 +313,7 @@ export default function LagLendNowPage() {
                   />
                 </div>
                 <button
-                  onClick={handleRequestOtp}
+                  onClick={() => handleRequestOtp()}
                   disabled={loading}
                   className="mt-5 w-full bg-white text-gray-950 font-semibold px-4 py-3 rounded-xl hover:bg-gray-100 transition disabled:opacity-50"
                 >

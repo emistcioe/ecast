@@ -11,6 +11,8 @@ type Material = {
   max_concurrent_loans: number;
   image_url?: string | null;
   is_active: boolean;
+  active_loaned?: number;
+  available_quantity?: number;
 };
 
 export default function LagInventorySection() {
@@ -345,7 +347,7 @@ export default function LagInventorySection() {
                   <div className="font-semibold truncate">{m.name}</div>
                   <div className="text-xs text-gray-500">
                     Total {m.total_quantity}
-                    {m.available != null && ` | Available ${m.available}`} | Max{" "}
+                    {m.available_quantity != null && ` | Available ${m.available_quantity}`} | Max{" "}
                     {m.max_concurrent_loans}
                   </div>
                 </div>
