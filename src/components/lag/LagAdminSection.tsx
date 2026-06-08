@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { useLag } from "@/lib/hooks/lag";
 
 type Material = {
@@ -198,13 +199,13 @@ export default function LagAdminSection() {
       )}
 
       {/* Material dialog */}
-      {dialogOpen && (
+      {dialogOpen && createPortal(
         <div
           ref={backdropRef}
           onClick={(e) => {
             if (e.target === backdropRef.current) resetForm();
           }}
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
+          className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-sm"
         >
           <div className="bg-gray-900 border border-gray-700 rounded-xl shadow-2xl w-full max-w-lg mx-4 p-6 animate-fade-in">
             <div className="flex items-center justify-between mb-5">
@@ -306,7 +307,8 @@ export default function LagAdminSection() {
               </div>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       <div className="bg-gray-900 border border-gray-800 rounded-lg p-6">
