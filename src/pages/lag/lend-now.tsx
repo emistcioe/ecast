@@ -40,7 +40,16 @@ export default function LagLendNowPage() {
     if (typeof window === "undefined") return;
     const savedToken = localStorage.getItem("lag_token");
     const savedEmail = localStorage.getItem("lag_email");
+    const savedAt = localStorage.getItem("lag_token_at");
     if (savedToken && savedEmail) {
+      // Expire client-side after 50 minutes
+      const elapsed = savedAt ? Date.now() - Number(savedAt) : Infinity;
+      if (elapsed > 50 * 60 * 1000) {
+        localStorage.removeItem("lag_token");
+        localStorage.removeItem("lag_email");
+        localStorage.removeItem("lag_token_at");
+        return;
+      }
       setToken(savedToken);
       setEmail(savedEmail);
       setStep("cart");
@@ -100,6 +109,7 @@ export default function LagLendNowPage() {
       if (typeof window !== "undefined") {
         localStorage.setItem("lag_token", data.token);
         localStorage.setItem("lag_email", email);
+        localStorage.setItem("lag_token_at", String(Date.now()));
       }
       setStep("cart");
     } catch (e) {
@@ -183,7 +193,16 @@ export default function LagLendNowPage() {
       setRequestedTo("");
       setStep("done");
     } catch (e: any) {
-      setError(e?.message || "Failed to submit request");
+      const msg = e?.message || "Failed to submit request";
+      setError(msg);
+      // If token expired/invalid, clear session and go back to email
+      if (msg.includes("LAG token") || msg.includes("token")) {
+        localStorage.removeItem("lag_token");
+        localStorage.removeItem("lag_email");
+        localStorage.removeItem("lag_token_at");
+        setToken(null);
+        setStep("email");
+      }
     } finally {
       setLoading(false);
     }
