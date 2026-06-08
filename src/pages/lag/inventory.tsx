@@ -103,7 +103,7 @@ export default function LagInventoryPage() {
                   <div className="flex items-start justify-between gap-3">
                     <h3 className="text-lg font-semibold">{m.name}</h3>
                     <span className="text-xs px-2 py-1 rounded-full bg-teal-600/10 border border-teal-500/20 text-teal-200">
-                      {(m.available ?? m.total_quantity) - (m.active_loaned ?? 0)} in stock
+                      {m.available_quantity ?? 0} in stock
                     </span>
                   </div>
                   <p className="text-gray-400 text-sm mt-2 line-clamp-3">
@@ -113,7 +113,7 @@ export default function LagInventoryPage() {
                     <div className="bg-gray-950 border border-gray-800 rounded-lg p-2">
                       <div>In stock</div>
                       <div className="text-white font-semibold">
-                        {(m.available ?? m.total_quantity) - (m.active_loaned ?? 0)}
+                        {m.available_quantity ?? 0}
                       </div>
                     </div>
                     <div className="bg-gray-950 border border-gray-800 rounded-lg p-2">
