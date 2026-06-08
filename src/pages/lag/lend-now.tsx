@@ -56,6 +56,10 @@ export default function LagLendNowPage() {
   }, []);
 
   useEffect(() => {
+    setError(null);
+  }, [step]);
+
+  useEffect(() => {
     let mounted = true;
     listMaterials()
       .then((data) => {
@@ -64,7 +68,7 @@ export default function LagLendNowPage() {
       })
       .catch(() => {
         if (!mounted) return;
-        setError("Failed to load materials");
+        if (step === "cart") setError("Failed to load materials");
       });
     return () => {
       mounted = false;
