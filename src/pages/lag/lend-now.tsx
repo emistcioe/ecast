@@ -9,6 +9,7 @@ type Material = {
   name: string;
   description: string;
   total_quantity: number;
+  available?: number | null;
   max_concurrent_loans: number;
   image_url?: string | null;
   active_loaned?: number;

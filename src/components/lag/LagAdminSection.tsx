@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useLag } from "@/lib/hooks/lag";
 
 type Material = {
@@ -6,6 +6,7 @@ type Material = {
   name: string;
   description: string;
   total_quantity: number;
+  available?: number | null;
   max_concurrent_loans: number;
   image_url?: string | null;
   is_active: boolean;
@@ -47,13 +48,16 @@ export default function LagAdminSection() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const [dialogOpen, setDialogOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [totalQuantity, setTotalQuantity] = useState(1);
+  const [availableQty, setAvailableQty] = useState<string>("");
   const [maxConcurrent, setMaxConcurrent] = useState(1);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [isActive, setIsActive] = useState(true);
+  const backdropRef = useRef<HTMLDivElement>(null);
 
   const loadData = async () => {
     setLoading(true);
@@ -81,9 +85,16 @@ export default function LagAdminSection() {
     setName("");
     setDescription("");
     setTotalQuantity(1);
+    setAvailableQty("");
     setMaxConcurrent(1);
     setImageFile(null);
     setIsActive(true);
+    setDialogOpen(false);
+  };
+
+  const openAdd = () => {
+    resetForm();
+    setDialogOpen(true);
   };
 
   const startEdit = (m: Material) => {
@@ -91,9 +102,11 @@ export default function LagAdminSection() {
     setName(m.name);
     setDescription(m.description || "");
     setTotalQuantity(m.total_quantity);
+    setAvailableQty(m.available != null ? String(m.available) : "");
     setMaxConcurrent(m.max_concurrent_loans);
     setImageFile(null);
     setIsActive(m.is_active);
+    setDialogOpen(true);
   };
 
   const submitMaterial = async () => {
@@ -104,6 +117,9 @@ export default function LagAdminSection() {
     form.append("total_quantity", String(totalQuantity));
     form.append("max_concurrent_loans", String(maxConcurrent));
     form.append("is_active", String(isActive));
+    if (availableQty !== "") {
+      form.append("available", availableQty);
+    }
     if (imageFile) form.append("image", imageFile);
 
     try {
@@ -159,12 +175,20 @@ export default function LagAdminSection() {
             Manage inventory and approve lending requests.
           </p>
         </div>
-        <button
-          onClick={loadData}
-          className="bg-white/5 hover:bg-white/10 border border-white/10 px-4 py-2 rounded-lg"
-        >
-          Refresh
-        </button>
+        <div className="flex gap-3">
+          <button
+            onClick={openAdd}
+            className="bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-400/40 text-cyan-100 font-semibold px-4 py-2 rounded-lg"
+          >
+            + Add material
+          </button>
+          <button
+            onClick={loadData}
+            className="bg-white/5 hover:bg-white/10 border border-white/10 px-4 py-2 rounded-lg"
+          >
+            Refresh
+          </button>
+        </div>
       </div>
 
       {error && (
@@ -173,138 +197,178 @@ export default function LagAdminSection() {
         </div>
       )}
 
-      <div className="grid lg:grid-cols-2 gap-6">
-        <div className="bg-gray-900 border border-gray-800 rounded-lg p-6">
-          <h2 className="text-xl font-semibold">
-            {editingId ? "Edit material" : "Add material"}
-          </h2>
-          <div className="mt-4 grid gap-4">
-            <input
-              className="w-full bg-gray-950/70 border border-gray-800 rounded-lg px-4 py-2"
-              placeholder="Material name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-            />
-            <textarea
-              className="w-full bg-gray-950/70 border border-gray-800 rounded-lg px-4 py-2"
-              placeholder="Description"
-              rows={3}
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-            />
-            <div className="grid sm:grid-cols-2 gap-4">
-              <input
-                type="number"
-                min={1}
-                className="w-full bg-gray-950/70 border border-gray-800 rounded-lg px-4 py-2"
-                placeholder="Total quantity"
-                value={totalQuantity}
-                onChange={(e) => setTotalQuantity(Number(e.target.value))}
-              />
-              <input
-                type="number"
-                min={1}
-                className="w-full bg-gray-950/70 border border-gray-800 rounded-lg px-4 py-2"
-                placeholder="Max concurrent loans"
-                value={maxConcurrent}
-                onChange={(e) => setMaxConcurrent(Number(e.target.value))}
-              />
-            </div>
-            <div className="flex items-center gap-3">
-              <input
-                type="checkbox"
-                checked={isActive}
-                onChange={(e) => setIsActive(e.target.checked)}
-              />
-              <span className="text-sm text-gray-300">Active</span>
-            </div>
-            <input
-              type="file"
-              accept="image/*"
-              onChange={(e) => setImageFile(e.target.files?.[0] || null)}
-              className="text-sm text-gray-400"
-            />
-            <div className="flex gap-3">
+      {/* Material dialog */}
+      {dialogOpen && (
+        <div
+          ref={backdropRef}
+          onClick={(e) => {
+            if (e.target === backdropRef.current) resetForm();
+          }}
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
+        >
+          <div className="bg-gray-900 border border-gray-700 rounded-xl shadow-2xl w-full max-w-lg mx-4 p-6 animate-fade-in">
+            <div className="flex items-center justify-between mb-5">
+              <h2 className="text-xl font-semibold">
+                {editingId ? "Edit material" : "Add material"}
+              </h2>
               <button
-                onClick={submitMaterial}
-                disabled={loading}
-                className="flex-1 bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-400/40 text-cyan-100 font-semibold px-4 py-2 rounded-lg"
+                onClick={resetForm}
+                className="text-gray-400 hover:text-white text-xl leading-none px-2"
               >
-                {editingId ? "Update" : "Create"}
+                x
               </button>
-              {editingId && (
+            </div>
+            <div className="grid gap-4">
+              <div>
+                <label className="block text-xs text-gray-400 mb-1">Name</label>
+                <input
+                  className="w-full bg-gray-950/70 border border-gray-800 rounded-lg px-4 py-2"
+                  placeholder="Material name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                />
+              </div>
+              <div>
+                <label className="block text-xs text-gray-400 mb-1">Description</label>
+                <textarea
+                  className="w-full bg-gray-950/70 border border-gray-800 rounded-lg px-4 py-2"
+                  placeholder="Description"
+                  rows={3}
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                />
+              </div>
+              <div className="grid grid-cols-3 gap-3">
+                <div>
+                  <label className="block text-xs text-gray-400 mb-1">Total qty</label>
+                  <input
+                    type="number"
+                    min={1}
+                    className="w-full bg-gray-950/70 border border-gray-800 rounded-lg px-4 py-2"
+                    value={totalQuantity}
+                    onChange={(e) => setTotalQuantity(Number(e.target.value))}
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs text-gray-400 mb-1">Available</label>
+                  <input
+                    type="number"
+                    min={0}
+                    max={totalQuantity}
+                    className="w-full bg-gray-950/70 border border-gray-800 rounded-lg px-4 py-2"
+                    placeholder="All"
+                    value={availableQty}
+                    onChange={(e) => setAvailableQty(e.target.value)}
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs text-gray-400 mb-1">Max loans</label>
+                  <input
+                    type="number"
+                    min={1}
+                    className="w-full bg-gray-950/70 border border-gray-800 rounded-lg px-4 py-2"
+                    value={maxConcurrent}
+                    onChange={(e) => setMaxConcurrent(Number(e.target.value))}
+                  />
+                </div>
+              </div>
+              <p className="text-xs text-gray-500 -mt-2">
+                Available limits how many can be lent out. Leave blank to use total quantity.
+              </p>
+              <div className="flex items-center gap-3">
+                <input
+                  type="checkbox"
+                  checked={isActive}
+                  onChange={(e) => setIsActive(e.target.checked)}
+                />
+                <span className="text-sm text-gray-300">Active</span>
+              </div>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => setImageFile(e.target.files?.[0] || null)}
+                className="text-sm text-gray-400"
+              />
+              <div className="flex gap-3 pt-2">
+                <button
+                  onClick={submitMaterial}
+                  disabled={loading}
+                  className="flex-1 bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-400/40 text-cyan-100 font-semibold px-4 py-2 rounded-lg"
+                >
+                  {editingId ? "Update" : "Create"}
+                </button>
                 <button
                   onClick={resetForm}
                   className="flex-1 bg-white/5 hover:bg-white/10 border border-white/10 px-4 py-2 rounded-lg"
                 >
                   Cancel
                 </button>
-              )}
+              </div>
             </div>
           </div>
         </div>
+      )}
 
-        <div className="bg-gray-900 border border-gray-800 rounded-lg p-6">
-          <h2 className="text-xl font-semibold">Pending approvals</h2>
-          <div className="mt-4 space-y-4">
-            {requests.length === 0 && (
-              <div className="text-sm text-gray-400">
-                No pending requests.
-              </div>
-            )}
-            {requests.map((r) => (
-              <div
-                key={r.id}
-                className="bg-gray-950 border border-gray-800 rounded-lg p-4"
-              >
-                <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <div className="font-semibold">
-                      {r.requester_name || "Student"}
-                    </div>
-                    <div className="text-xs text-gray-400">
-                      {r.batch_label || r.roll_number || "-"}
-                    </div>
-                    <div className="text-xs text-gray-500">
-                      Requested: {formatDate(r.created_at)}
-                    </div>
-                    <div className="text-xs text-gray-500">
-                      Duration: {formatDate(r.requested_from)} →{" "}
-                      {formatDate(r.requested_to)}
-                    </div>
-                    <div className="text-xs text-gray-500">
-                      Email: {r.requester_email}
-                    </div>
-                    <div className="text-xs text-gray-500">
-                      Phone: {r.phone_number || "-"}
-                    </div>
+      <div className="bg-gray-900 border border-gray-800 rounded-lg p-6">
+        <h2 className="text-xl font-semibold">Pending approvals</h2>
+        <div className="mt-4 space-y-4">
+          {requests.length === 0 && (
+            <div className="text-sm text-gray-400">
+              No pending requests.
+            </div>
+          )}
+          {requests.map((r) => (
+            <div
+              key={r.id}
+              className="bg-gray-950 border border-gray-800 rounded-lg p-4"
+            >
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <div className="font-semibold">
+                    {r.requester_name || "Student"}
                   </div>
-                  <div className="text-xs text-gray-400">{r.status}</div>
+                  <div className="text-xs text-gray-400">
+                    {r.batch_label || r.roll_number || "-"}
+                  </div>
+                  <div className="text-xs text-gray-500">
+                    Requested: {formatDate(r.created_at)}
+                  </div>
+                  <div className="text-xs text-gray-500">
+                    Duration: {formatDate(r.requested_from)} →{" "}
+                    {formatDate(r.requested_to)}
+                  </div>
+                  <div className="text-xs text-gray-500">
+                    Email: {r.requester_email}
+                  </div>
+                  <div className="text-xs text-gray-500">
+                    Phone: {r.phone_number || "-"}
+                  </div>
                 </div>
-                <div className="mt-2 text-sm text-gray-300">
-                  {r.items.map((i, idx) => (
-                    <div key={idx}>
-                      {i.material_name} x{i.quantity}
-                    </div>
-                  ))}
-                </div>
-                <div className="mt-3 flex gap-2">
-                  <button
-                    onClick={() => handleApprove(r.id)}
-                    className="bg-green-600/20 hover:bg-green-600/30 border border-green-500/30 px-3 py-1.5 rounded-lg text-sm"
-                  >
-                    Approve
-                  </button>
-                  <button
-                    onClick={() => handleReject(r.id)}
-                    className="bg-red-600/20 hover:bg-red-600/30 border border-red-500/30 px-3 py-1.5 rounded-lg text-sm"
-                  >
-                    Reject
-                  </button>
-                </div>
+                <div className="text-xs text-gray-400">{r.status}</div>
               </div>
-            ))}
-          </div>
+              <div className="mt-2 text-sm text-gray-300">
+                {r.items.map((i, idx) => (
+                  <div key={idx}>
+                    {i.material_name} x{i.quantity}
+                  </div>
+                ))}
+              </div>
+              <div className="mt-3 flex gap-2">
+                <button
+                  onClick={() => handleApprove(r.id)}
+                  className="bg-green-600/20 hover:bg-green-600/30 border border-green-500/30 px-3 py-1.5 rounded-lg text-sm"
+                >
+                  Approve
+                </button>
+                <button
+                  onClick={() => handleReject(r.id)}
+                  className="bg-red-600/20 hover:bg-red-600/30 border border-red-500/30 px-3 py-1.5 rounded-lg text-sm"
+                >
+                  Reject
+                </button>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
 
@@ -333,7 +397,9 @@ export default function LagAdminSection() {
                   <div>
                     <div className="font-semibold">{m.name}</div>
                     <div className="text-xs text-gray-500">
-                      Total {m.total_quantity} | Max {m.max_concurrent_loans}
+                      Total {m.total_quantity}
+                      {m.available != null && ` | Available ${m.available}`}
+                      {" "}| Max {m.max_concurrent_loans}
                     </div>
                   </div>
                   <span

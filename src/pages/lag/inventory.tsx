@@ -9,6 +9,7 @@ type Material = {
   name: string;
   description: string;
   total_quantity: number;
+  available?: number | null;
   max_concurrent_loans: number;
   image_url?: string | null;
   active_loaned?: number;
@@ -108,11 +109,17 @@ export default function LagInventoryPage() {
                   <p className="text-gray-400 text-sm mt-2 line-clamp-3">
                     {m.description || "No description"}
                   </p>
-                  <div className="grid grid-cols-2 gap-3 mt-4 text-xs text-gray-400">
+                  <div className="grid grid-cols-3 gap-3 mt-4 text-xs text-gray-400">
                     <div className="bg-gray-950 border border-gray-800 rounded-lg p-2">
                       <div>Total</div>
                       <div className="text-white font-semibold">
                         {m.total_quantity}
+                      </div>
+                    </div>
+                    <div className="bg-gray-950 border border-gray-800 rounded-lg p-2">
+                      <div>Available</div>
+                      <div className="text-white font-semibold">
+                        {m.available ?? m.total_quantity}
                       </div>
                     </div>
                     <div className="bg-gray-950 border border-gray-800 rounded-lg p-2">
