@@ -182,8 +182,8 @@ export default function LagLendNowPage() {
       setRequestedFrom("");
       setRequestedTo("");
       setStep("done");
-    } catch (e) {
-      setError("Failed to submit request");
+    } catch (e: any) {
+      setError(e?.message || "Failed to submit request");
     } finally {
       setLoading(false);
     }
@@ -228,13 +228,13 @@ export default function LagLendNowPage() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="name@tcioe.edu.np"
-                    className="w-full bg-gray-950/70 border border-gray-800 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500/40"
+                    className="w-full bg-gray-950/70 border border-gray-800 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-teal-500/40"
                   />
                 </div>
                 <button
                   onClick={handleRequestOtp}
                   disabled={loading}
-                  className="mt-4 w-full bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-400/40 text-cyan-100 font-semibold px-4 py-3 rounded-lg transition"
+                  className="mt-4 w-full bg-teal-600/20 hover:bg-teal-600/30 border border-teal-500/30 text-teal-100 font-semibold px-4 py-3 rounded-lg transition"
                 >
                   {loading ? "Sending..." : "Send OTP"}
                 </button>
@@ -262,14 +262,14 @@ export default function LagLendNowPage() {
                     value={otp}
                     onChange={(e) => setOtp(e.target.value)}
                     placeholder="6-digit code"
-                    className="w-full bg-gray-950/70 border border-gray-800 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500/40"
+                    className="w-full bg-gray-950/70 border border-gray-800 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-teal-500/40"
                   />
                 </div>
                 <div className="mt-4 flex gap-3">
                   <button
                     onClick={handleVerifyOtp}
                     disabled={loading}
-                    className="flex-1 bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-400/40 text-cyan-100 font-semibold px-4 py-3 rounded-lg transition"
+                    className="flex-1 bg-teal-600/20 hover:bg-teal-600/30 border border-teal-500/30 text-teal-100 font-semibold px-4 py-3 rounded-lg transition"
                   >
                     {loading ? "Verifying..." : "Verify"}
                   </button>
@@ -324,7 +324,7 @@ export default function LagLendNowPage() {
                         <div className="flex-1">
                           <div className="flex items-center justify-between gap-3">
                             <h3 className="font-semibold">{m.name}</h3>
-                            <span className="text-xs text-cyan-200 bg-cyan-500/10 border border-cyan-500/20 px-2 py-1 rounded-full">
+                            <span className="text-xs text-teal-200 bg-teal-600/10 border border-teal-500/20 px-2 py-1 rounded-full">
                               Available {available}
                             </span>
                           </div>
@@ -369,7 +369,7 @@ export default function LagLendNowPage() {
                       className="flex items-center justify-between text-sm"
                     >
                       <span>{c.material.name}</span>
-                      <span className="text-cyan-200">x{c.quantity}</span>
+                      <span className="text-teal-200">x{c.quantity}</span>
                     </div>
                   ))}
                 </div>
@@ -379,40 +379,40 @@ export default function LagLendNowPage() {
                     <input
                       value={requesterName}
                       onChange={(e) => setRequesterName(e.target.value)}
-                      className="w-full bg-gray-950/70 border border-gray-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-cyan-500/40"
+                      className="w-full bg-gray-950/70 border border-gray-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-teal-500/40"
                       placeholder="Your full name"
                     />
                     <label className="text-sm text-gray-400">Phone number</label>
                     <input
                       value={phoneNumber}
                       onChange={(e) => setPhoneNumber(e.target.value)}
-                      className="w-full bg-gray-950/70 border border-gray-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-cyan-500/40"
+                      className="w-full bg-gray-950/70 border border-gray-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-teal-500/40"
                       placeholder="98XXXXXXXX"
                     />
                     <label className="text-sm text-gray-400">Roll number</label>
                     <input
                       value={rollNumber}
                       onChange={(e) => setRollNumber(e.target.value)}
-                      className="w-full bg-gray-950/70 border border-gray-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-cyan-500/40"
+                      className="w-full bg-gray-950/70 border border-gray-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-teal-500/40"
                       placeholder="THA080BCT"
                     />
                     <div className="grid sm:grid-cols-2 gap-3">
                       <div>
                         <label className="text-sm text-gray-400">From</label>
                         <input
-                          type="datetime-local"
+                          type="date"
                           value={requestedFrom}
                           onChange={(e) => setRequestedFrom(e.target.value)}
-                          className="mt-1 w-full bg-gray-950/70 border border-gray-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-cyan-500/40"
+                          className="mt-1 w-full bg-gray-950/70 border border-gray-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-teal-500/40 [color-scheme:dark]"
                         />
                       </div>
                       <div>
                         <label className="text-sm text-gray-400">To</label>
                         <input
-                          type="datetime-local"
+                          type="date"
                           value={requestedTo}
                           onChange={(e) => setRequestedTo(e.target.value)}
-                          className="mt-1 w-full bg-gray-950/70 border border-gray-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-cyan-500/40"
+                          className="mt-1 w-full bg-gray-950/70 border border-gray-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-teal-500/40 [color-scheme:dark]"
                         />
                       </div>
                     </div>
@@ -423,7 +423,7 @@ export default function LagLendNowPage() {
                   <textarea
                     value={notes}
                     onChange={(e) => setNotes(e.target.value)}
-                    className="mt-2 w-full bg-gray-950/70 border border-gray-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-cyan-500/40"
+                    className="mt-2 w-full bg-gray-950/70 border border-gray-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-teal-500/40"
                     rows={4}
                     placeholder="Tell us what you are using the items for"
                   />
@@ -431,7 +431,7 @@ export default function LagLendNowPage() {
                 <button
                   onClick={handleSubmitRequest}
                   disabled={loading}
-                  className="mt-4 w-full bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-400/40 text-cyan-100 font-semibold px-4 py-3 rounded-lg transition"
+                  className="mt-4 w-full bg-teal-600/20 hover:bg-teal-600/30 border border-teal-500/30 text-teal-100 font-semibold px-4 py-3 rounded-lg transition"
                 >
                   {loading ? "Submitting..." : "Submit Request"}
                 </button>
@@ -447,7 +447,7 @@ export default function LagLendNowPage() {
                 approved.
               </p>
               {success?.id && (
-                <div className="mt-4 text-sm text-cyan-200">
+                <div className="mt-4 text-sm text-teal-200">
                   Request ID: {success.id}
                 </div>
               )}

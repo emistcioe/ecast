@@ -14,7 +14,7 @@ export default function LagLandingPage() {
         <section className="max-w-6xl mx-auto px-4 md:px-6">
           <div className="grid lg:grid-cols-2 gap-10 items-center">
             <div>
-              <div className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-cyan-300/80 bg-cyan-500/10 border border-cyan-500/20 px-3 py-1.5 rounded-full">
+              <div className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-teal-200/80 bg-teal-600/10 border border-teal-500/20 px-3 py-1.5 rounded-full">
                 Lend and Grow
               </div>
               <h1 className="mt-4 text-4xl md:text-5xl font-bold leading-tight">
@@ -29,7 +29,7 @@ export default function LagLandingPage() {
               <div className="mt-8 flex flex-col sm:flex-row gap-4">
                 <Link
                   href="/lag/lend-now"
-                  className="inline-flex items-center justify-center px-6 py-3 rounded-lg bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-400/40 text-cyan-100 font-semibold transition"
+                  className="inline-flex items-center justify-center px-6 py-3 rounded-lg bg-teal-600/20 hover:bg-teal-600/30 border border-teal-500/30 text-teal-100 font-semibold transition"
                 >
                   Lend Now
                 </Link>

@@ -82,7 +82,14 @@ export function useLag() {
         },
         body: JSON.stringify(payload),
       });
-      if (!res.ok) throw new Error("create request failed");
+      if (!res.ok) {
+        let detail = "create request failed";
+        try {
+          const err = await res.json();
+          detail = err.detail || JSON.stringify(err);
+        } catch {}
+        throw new Error(detail);
+      }
       return res.json();
     },
     []
