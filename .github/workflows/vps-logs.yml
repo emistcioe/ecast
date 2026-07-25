@@ -19,7 +19,7 @@ on:
 jobs:
   show-logs:
     name: Show VPS logs
-    runs-on: [self-hosted, club emis]
+    runs-on: [self-hosted, club, emis]
 
     steps:
       - name: Resolve service and print logs
